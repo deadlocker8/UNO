@@ -188,7 +188,7 @@ public class Game
 			challengeCounter += 4;			
 		}
 		
-		controller.setLastCard(lastCard.getColorAsHex(), lastCard.getTypeBeautyfied());
+		controller.setLastCard(lastCard);
 		
 		System.out.println("new lastCard: " + lastCard);
 		System.out.println("new wishColor: " + this.wishColor);

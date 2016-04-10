@@ -8,23 +8,20 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import logic.Card;
+import logic.CardType;
+import logic.Color;
 import logic.Game;
 
 public class Controller
 {
-	@FXML private Label labelLastCard;
-	@FXML private Rectangle iconLastCard;
-	@FXML private HBox hboxPlayerDeck;
-	@FXML private StackPane iconDeck;
+	@FXML private ImageView iconLastCard;
+	@FXML private ImageView iconDeck;
+	@FXML private HBox hboxPlayerDeck;	
 	
 	public Game game;
 	
@@ -34,10 +31,7 @@ public class Controller
 
 	public void init()
 	{
-		iconLastCard.setArcWidth(20);
-		iconLastCard.setArcHeight(20);	
-		
-		iconDeck = createBackCard();
+		iconDeck.setImage(createBackCard());		
 		
 		game = new Game(this, 3);
 		game.newGame(5);
@@ -48,48 +42,23 @@ public class Controller
 		this.stage = stage;
 	}
 	
-	public void setLastCard(String color, String text)
+	public void setLastCard(Card card)
 	{
-		iconLastCard.setFill(Color.web(color));
-		labelLastCard.setText(text);
+		iconLastCard.setImage(createCard(card, true).getImage());
 	}
 	
-	private StackPane createBackCard()
+	private Image createBackCard()
 	{		
-		Rectangle newCard = new Rectangle(57.0, 90.0);		
-		newCard.setStroke(Color.BLACK);
-		newCard.setStrokeWidth(2.0);
-		newCard.setArcWidth(20);
-		newCard.setArcHeight(20);
-		
-		ImageView imageView = new ImageView(new Image("images/card-back.png"));	
-		imageView.setFitHeight(90.0);
-		imageView.setFitWidth(57.0);
-		
-		StackPane pane = new StackPane();
-		pane.getChildren().add(newCard);
-		pane.getChildren().add(imageView);
-		
-		return pane;
+		return new Image("images/card-back.png");		
 	}
 	
-	private StackPane createCard(Card card, boolean valid)
-	{		
-		Rectangle newCard = new Rectangle(57.0, 90.0);		
-		newCard.setStroke(Color.BLACK);
-		newCard.setStrokeWidth(2.0);
-		newCard.setArcWidth(20);
-		newCard.setArcHeight(20);
-		
+	private ImageView createCard(Card card, boolean valid)
+	{			
 		ImageView imageView = new ImageView(new Image("images/" + card.getType() + "-" + card.getColor() + ".png"));
 		imageView.setFitHeight(90.0);
-		imageView.setFitWidth(57.0);	
-		
-		StackPane pane = new StackPane();
-		pane.getChildren().add(newCard);
-		pane.getChildren().add(imageView);
-		
-		return pane;
+		imageView.setFitWidth(57.0);			
+				
+		return imageView;
 	}
 		
 	public void setPlayerDeck(ArrayList<Card> deck)
