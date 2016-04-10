@@ -110,6 +110,11 @@ public class AI
 	{
 		return name;
 	}
+	
+	public ArrayList<Card> getDeck()
+	{
+		return deck;
+	}
 
 	public void turn(Card lastCard, Color wishColor, boolean challenge)
 	{
@@ -123,12 +128,14 @@ public class AI
 				drawCards(game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck()));	
 				System.out.println("draw " + game.getChallengeCounter() + " cards");
 				System.out.println("deack after draw: " + deck);
+				game.draw();
 			}
 			else
 			{
 				drawCard(game.getDeck().drawCard(game.getDeadDeck()));	
 				System.out.println("draw one card");
 				System.out.println("deack after draw: " + deck);
+				game.draw();
 			}		
 		}	
 		else
@@ -140,7 +147,7 @@ public class AI
 			Card playedCard = getHighestValuedCard(validDeck);
 			Color newWishColor = null;
 			
-			if(playedCard.getType().equals(CardType.WILD) || playedCard.getType().equals(CardType.DRAW_TWO))
+			if(playedCard.getType().equals(CardType.WILD) || playedCard.getType().equals(CardType.DRAW_FOUR))
 			{
 				Random random = new Random();
 				int colorInt = random.nextInt(4) + 1;

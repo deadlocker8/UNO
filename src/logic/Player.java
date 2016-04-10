@@ -124,14 +124,14 @@ public class Player
 			if(challenge)
 			{
 				drawCards(game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck()));	
-				System.err.println("draw " + game.getChallengeCounter() + " cards");
-				System.out.println("deack after draw: " + deck);
+				System.out.println("draw " + game.getChallengeCounter() + " cards");
+				System.out.println("deack after draw: " + deck);				
 			}
 			else
 			{
 				drawCard(game.getDeck().drawCard(game.getDeadDeck()));	
-				System.err.println("draw one card");
-				System.out.println("deack after draw: " + deck);
+				System.out.println("draw one card");
+				System.out.println("deack after draw: " + deck);				
 			}		
 		}
 		else
@@ -139,18 +139,7 @@ public class Player
 			System.out.println("choose");
 			//playerInput (draw or turnCard)
 			
-			//DEBUG
-			Card playedCard = new Card(CardType.EIGHT, Color.RED, 0);
-			Color newWishColor = null;
-			
-			if(playedCard.getType().equals(CardType.WILD) || playedCard.getType().equals(CardType.DRAW_TWO))
-			{
-				//TODO choose color
-				//DEBUG
-				newWishColor = Color.BLUE;
-			}		
-			
-			game.playCard(playCard(playedCard), newWishColor);
+			//TODO add "draw" - Button
 		}	
 	}
 }

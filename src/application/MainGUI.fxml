@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Controller">
    <children>
-      <HBox fx:id="hboxPlayerDeck" layoutX="83.0" layoutY="450.0" prefHeight="107.0" prefWidth="634.0" />
+      <HBox fx:id="hboxPlayerDeck" alignment="CENTER" layoutX="83.0" layoutY="450.0" prefHeight="107.0" prefWidth="634.0" />
       <ImageView fx:id="iconDeck" fitHeight="90.0" fitWidth="57.0" layoutX="447.0" layoutY="230.0" pickOnBounds="true" preserveRatio="true" />
       <ImageView fx:id="iconLastCard" fitHeight="90.0" fitWidth="57.0" layoutX="277.0" layoutY="230.0" pickOnBounds="true" preserveRatio="true" />
+      <HBox fx:id="hboxAI1" layoutX="246.0" layoutY="31.0" prefHeight="107.0" prefWidth="309.0" />
+      <Label fx:id="labelCurrentPlayer" alignment="CENTER" contentDisplay="CENTER" layoutX="320.0" layoutY="377.0" prefHeight="31.0" prefWidth="162.0" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="19.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>
