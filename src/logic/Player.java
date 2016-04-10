@@ -109,6 +109,11 @@ public class Player
 		return name;
 	}
 	
+	public ArrayList<Card> getDeck()
+	{
+		return deck;
+	}
+	
 	public void turn(Card lastCard, Color wishColor, boolean challenge)
 	{
 		System.out.println("All cards on hand: \n" + deck);
@@ -135,7 +140,7 @@ public class Player
 			//playerInput (draw or turnCard)
 			
 			//DEBUG
-			Card playedCard = null;
+			Card playedCard = new Card(CardType.EIGHT, Color.RED, 0);
 			Color newWishColor = null;
 			
 			if(playedCard.getType().equals(CardType.WILD) || playedCard.getType().equals(CardType.DRAW_TWO))

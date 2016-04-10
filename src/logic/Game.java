@@ -3,6 +3,8 @@ package logic;
 import java.util.ArrayList;
 import java.util.Random;
 
+import application.Controller;
+
 public class Game
 {
 	private Deck deck;
@@ -16,9 +18,11 @@ public class Game
 	private Color wishColor;
 	private boolean challenge;
 	private Direction direction;
+	private Controller controller;
 
-	public Game(int numberOfAIs)
+	public Game(Controller controller, int numberOfAIs)
 	{
+		this.controller = controller;
 		deck = new Deck();
 		deadDeck = new DeadDeck();
 		player = new Player("Spieler", this);
@@ -55,8 +59,9 @@ public class Game
 		}
 		
 		deadDeck.add(deck.drawCard(deadDeck));
-		lastCard = deadDeck.getCards().get(deadDeck.getCards().size()-1);
-		System.out.println("lastCard: " + lastCard);
+		lastCard = deadDeck.getCards().get(deadDeck.getCards().size()-1);	
+		
+		start();
 	}
 
 	public int getGameCount()
@@ -67,13 +72,10 @@ public class Game
 	private void start()
 	{
 		Random random = new Random();
-		currentPlayer = random.nextInt(ais.size() + 1) + 1;
-
-		// DEBUG
-		currentPlayer = 1;
-		
-		while(true)
-		{
+		currentPlayer = random.nextInt(ais.size() + 1) + 1;		
+	
+		//while(true)
+		//{
 			if(!lastCard.getType().equals(CardType.SKIP))
 			{
 				if(lastCard.getType().equals(CardType.REVERSE))
@@ -86,30 +88,40 @@ public class Game
 					{
 						direction = Direction.RIGHT;
 					}
+					//TODO show icon direction in UI
 				}	
 				
 				determineNextPlayer();
 				
+				//DEBUG
+				currentPlayer = 1;
+				//TODO mark currentPlayer in UI
+				
 				if(currentPlayer == 1)
-				{			
-					player.turn(lastCard, wishColor, challenge);
+				{						
+					controller.setValidPlayerDeck(player.getDeck(), player.getValidCards(lastCard, wishColor, challenge));					
+					
+					//player.turn(lastCard, wishColor, challenge);
+//					controller.setPlayerDeck(player.getDeck());
+					
 					if(player.getDeckSize() == 0)
 					{						
 						end(player.getName());
-						break;
-					}
+//						break;
+					}					
 				}
 				else
-				{					
-					ais.get(currentPlayer - 2).turn(lastCard, wishColor, challenge);
+				{							
+					ais.get(currentPlayer - 2).turn(lastCard, wishColor, challenge);						
+					
 					if(ais.get(currentPlayer - 2).getDeckSize() == 0)
 					{
 						end(ais.get(currentPlayer - 2).getName());
-						break;
+//						break;
 					}
 				}
 			}			
-		}
+		//}
 	}
 	
 	private void determineNextPlayer()
@@ -140,6 +152,7 @@ public class Game
 
 	private void end(String name)
 	{
+		//TODO in UI
 		System.out.println("Player " + name + " wins!");
 	}
 
@@ -175,17 +188,11 @@ public class Game
 			challengeCounter += 4;			
 		}
 		
+		controller.setLastCard(lastCard.getColorAsHex(), lastCard.getTypeBeautyfied());
+		
 		System.out.println("new lastCard: " + lastCard);
 		System.out.println("new wishColor: " + this.wishColor);
 		System.out.println("new challenge: " + challenge);
 		System.out.println("new challengeCounter: " + challengeCounter);
 	}
-
-	public static void main(String[] args)
-	{
-		Game game = new Game(3);
-		game.newGame(5);
-		game.start();
-	}
-
 }

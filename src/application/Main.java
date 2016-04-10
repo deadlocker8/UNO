@@ -1,14 +1,11 @@
 package application;
 
 import javafx.application.Application;
-import javafx.concurrent.Worker;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class Main extends Application
 {
@@ -23,16 +20,14 @@ public class Main extends Application
 			Scene scene = new Scene(root, 800, 600);
 
 			stage.setResizable(true);
-			stage.setTitle("PlayCount");
-			stage.setScene(scene);
-			stage.setMinHeight(400);
-			stage.setMinWidth(750);
+			stage.setTitle("UNO");
+			stage.setScene(scene);			
 			
 			Controller controller = (Controller)loader.getController();
 			controller.setStage(stage);			
 			controller.init();			
 			
-			stage.getIcons().add(new Image("application/icon.png"));
+			stage.getIcons().add(new Image("images/icon.png"));
 			stage.show();		
 		}
 		catch(Exception e)
