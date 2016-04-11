@@ -36,11 +36,13 @@ public class AI
 	public void drawCard(Card card)
 	{
 		deck.add(card);
+		game.getController().setAI1Deck(deck);
 	}
 
 	public void drawCards(ArrayList<Card> cards)
 	{
 		deck.addAll(cards);
+		game.getController().setAI1Deck(deck);
 	}
 
 	public Card playCard(Card card)
@@ -162,9 +164,9 @@ public class AI
 					case 4: newWishColor = Color.GREEN;
 							break;
 				}			
-			}		
+			}
 			
-			game.playCard(playCard(playedCard), newWishColor);
+			game.getController().moveAICardToDeadDeck(this ,playedCard, newWishColor);			
 		}	
 	}
 	

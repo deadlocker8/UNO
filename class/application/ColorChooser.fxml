@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="300.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ColorChooserController">
+   <children>
+      <Label layoutX="39.0" layoutY="29.0" text="Wähle deine Wunschfarbe">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Rectangle fx:id="rectRed" arcHeight="5.0" arcWidth="5.0" fill="#ff1f1f" height="58.0" layoutX="170.0" layoutY="101.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="58.0" />
+      <Rectangle fx:id="rectYellow" arcHeight="5.0" arcWidth="5.0" fill="#ffd821" height="58.0" layoutX="73.0" layoutY="101.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="58.0" />
+      <Rectangle fx:id="rectGreen" arcHeight="5.0" arcWidth="5.0" fill="#44a119" height="58.0" layoutX="170.0" layoutY="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="58.0" />
+      <Rectangle fx:id="rectBlue" arcHeight="5.0" arcWidth="5.0" fill="#215eff" height="58.0" layoutX="73.0" layoutY="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="58.0" />
+   </children>
+</AnchorPane>

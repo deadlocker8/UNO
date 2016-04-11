@@ -22,7 +22,8 @@ public class Game
 	private boolean lastPlayerDraw;
 	private boolean skipped;
 	private int counter;
-
+	private boolean running;
+	
 	public Game(Controller controller, int numberOfAIs)
 	{
 		this.controller = controller;
@@ -65,9 +66,7 @@ public class Game
 		
 		deadDeck.add(deck.drawCard(deadDeck));
 		lastCard = deadDeck.getCards().get(deadDeck.getCards().size()-1);	
-		controller.setLastCard(lastCard);
-		
-		//TODO abfangen wenn  +4 oder +2 oder wild am anfang kommt
+		controller.setLastCard(lastCard);	
 		
 		start();
 	}
@@ -79,10 +78,11 @@ public class Game
 	
 	public void start()
 	{
+		running = true;
 		Random random = new Random();
 		currentPlayer = random.nextInt(ais.size() + 1) + 1;			
 	
-		counter = 1;	
+		counter = 0;	
 		
 		run();
 	}
@@ -104,7 +104,7 @@ public class Game
 				}
 			}		
 		
-		System.out.println("ROUND: " + counter / 4);
+		System.out.println("ROUND: " + counter / 4 + 1);
 		
 		determineNextPlayer();				
 		
@@ -130,19 +130,17 @@ public class Game
 			if(currentPlayer == 1)
 			{			
 				controller.setLabelCurrentPlayer(player.getName() + " ist am Zug");
-				
+							
 				controller.setValidPlayerDeck(player.getDeck(), player.getValidCards(lastCard, wishColor, challenge));					
 				
-				player.turn(lastCard, wishColor, challenge);
-				controller.setPlayerDeck(player.getDeck());							
+				player.turn(lastCard, wishColor, challenge);										
 			}
 			else
-			{			
+			{	
+			
 				AI currentAI = ais.get(currentPlayer - 2);
 				
 				controller.setLabelCurrentPlayer(currentAI.getName() + " ist am Zug");
-				
-				currentAI.turn(lastCard, wishColor, challenge);
 				
 				switch(currentPlayer)
 				{
@@ -153,7 +151,9 @@ public class Game
 //						case 4:	controller.setAI3Deck(currentAI.getDeck());
 //								break;
 					default: break;
-				}				
+				}	
+				
+				currentAI.turn(lastCard, wishColor, challenge);							
 			}
 		}
 		else
@@ -198,8 +198,10 @@ public class Game
 
 	private void end(String name)
 	{
-		//TODO in UI
+		//TODO alert 
 		System.err.println("Player " + name + " wins!");
+		
+		running = false;
 		
 		if(currentPlayer == 1)
 		{
@@ -231,6 +233,21 @@ public class Game
 		return player;
 	}
 	
+	public boolean isRunning()
+	{
+		return running;
+	}
+	
+	public int getCurrentPlayer()
+	{
+		return currentPlayer;
+	}
+	
+	public Controller getController()
+	{
+		return controller;
+	}
+	
 	public void draw()
 	{		
 		challenge = false;
@@ -238,10 +255,10 @@ public class Game
 		lastPlayerDraw = true;
 		
 		run();
-	}
+	}		
 	
 	public void playCard(Card card, Color wishColor)
-	{
+	{	
 		deadDeck.add(card);
 		lastCard = card;
 		this.wishColor = wishColor;

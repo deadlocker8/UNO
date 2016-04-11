@@ -35,11 +35,13 @@ public class Player
 	public void drawCard(Card card)
 	{
 		deck.add(card);
+		game.getController().setPlayerDeck(deck);
 	}
 	
 	public void drawCards(ArrayList<Card> cards)
 	{
 		deck.addAll(cards);
+		game.getController().setPlayerDeck(deck);
 	}
 	
 	public Card playCard(Card card)
@@ -123,23 +125,20 @@ public class Player
 		{
 			if(challenge)
 			{
+				//TODO notification
 				drawCards(game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck()));	
-				System.out.println("draw " + game.getChallengeCounter() + " cards");
-				System.out.println("deack after draw: " + deck);				
+				System.out.println("You can't challenge --> please draw " + game.getChallengeCounter() + " cards");
+				game.draw();
 			}
 			else
-			{
-				drawCard(game.getDeck().drawCard(game.getDeadDeck()));	
-				System.out.println("draw one card");
-				System.out.println("deack after draw: " + deck);				
+			{			
+				System.out.println("No valid cards --> please draw");				
 			}		
 		}
 		else
 		{
 			System.out.println("choose");
-			//playerInput (draw or turnCard)
-			
-			//TODO add "draw" - Button
+			//playerInput (draw or turnCard)		
 		}	
 	}
 }
