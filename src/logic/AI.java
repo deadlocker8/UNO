@@ -6,13 +6,15 @@ import java.util.Random;
 public class AI
 {
 	private String name;
+	private int id;
 	private ArrayList<Card> deck;
 	private int wins;
 	private Game game;
 
-	public AI(String name, Game game)
+	public AI(String name, int id, Game game)
 	{
 		this.name = name;
+		this.id = id;
 		deck = new ArrayList<Card>();
 		wins = 0;
 		this.game = game;
@@ -32,17 +34,22 @@ public class AI
 	{
 		return wins;
 	}
+	
+	public int getID()
+	{
+		return id;
+	}
 
 	public void drawCard(Card card)
 	{
 		deck.add(card);
-		game.getController().setAI1Deck(deck);
+		game.getController().setAIDeck(this, deck);
 	}
 
 	public void drawCards(ArrayList<Card> cards)
 	{
 		deck.addAll(cards);
-		game.getController().setAI1Deck(deck);
+		game.getController().setAIDeck(this, deck);
 	}
 
 	public Card playCard(Card card)
@@ -151,6 +158,7 @@ public class AI
 			
 			if(playedCard.getType().equals(CardType.WILD) || playedCard.getType().equals(CardType.DRAW_FOUR))
 			{
+				//TODO choose color that is mostly in deck (except black)
 				Random random = new Random();
 				int colorInt = random.nextInt(4) + 1;
 				switch(colorInt)
@@ -166,7 +174,7 @@ public class AI
 				}			
 			}
 			
-			game.getController().moveAICardToDeadDeck(this ,playedCard, newWishColor);			
+			game.getController().moveAICardToDeadDeck(this,game.getCurrentPlayer(), playedCard, newWishColor);			
 		}	
 	}
 	

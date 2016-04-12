@@ -57,6 +57,6 @@ public class ColorChooserController
 			}
 		});
 		
-		//TODO prevent closing without choosing a color
+		//TODO prevent closing without choosing a color --> but cancel button
 	}
 }

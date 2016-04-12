@@ -33,7 +33,7 @@ public class Game
 		ais = new ArrayList<AI>();
 		for(int i = 1; i <= numberOfAIs; i++)
 		{
-			ais.add(new AI("AI " + i, this));
+			ais.add(new AI("AI " + i, i-1, this));
 		}
 
 		gameCount = 0;
@@ -67,6 +67,12 @@ public class Game
 		deadDeck.add(deck.drawCard(deadDeck));
 		lastCard = deadDeck.getCards().get(deadDeck.getCards().size()-1);	
 		controller.setLastCard(lastCard);	
+		if(lastCard.getType().equals(CardType.DRAW_FOUR) || lastCard.getType().equals(CardType.WILD))
+		{
+			wishColor = Color.ALL;
+			controller.chosenWishColor = wishColor;
+			controller.showCircleWishColor(wishColor);
+		}
 		
 		start();
 	}
@@ -142,16 +148,7 @@ public class Game
 				
 				controller.setLabelCurrentPlayer(currentAI.getName() + " ist am Zug");
 				
-				switch(currentPlayer)
-				{
-					case 2:	controller.setAI1Deck(currentAI.getDeck());
-							break;
-//						case 3:	controller.setAI2Deck(currentAI.getDeck());
-//								break;
-//						case 4:	controller.setAI3Deck(currentAI.getDeck());
-//								break;
-					default: break;
-				}	
+				controller.setAIDeck(currentAI, currentAI.getDeck());					
 				
 				currentAI.turn(lastCard, wishColor, challenge);							
 			}
@@ -199,6 +196,9 @@ public class Game
 	private void end(String name)
 	{
 		//TODO alert 
+		
+		controller.clearAllDecks(ais);
+		
 		System.err.println("Player " + name + " wins!");
 		
 		running = false;
