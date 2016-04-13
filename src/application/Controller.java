@@ -168,8 +168,10 @@ public class Controller
 		}
 		
 		if(ais.size() == 3)
-		{			
-			labelAI3Name.setText(ais.get(2).getName());
+		{		
+			labelAI1Name.setText(ais.get(1).getName());
+			labelAI2Name.setText(ais.get(2).getName());
+			labelAI3Name.setText(ais.get(0).getName());
 			labelAI3Name.setVisible(true);
 		}
 	}
@@ -616,6 +618,7 @@ public class Controller
 		}			
 	}
 	
+	@SuppressWarnings("unused")
 	public void moveCardFromDeckToAI(AI ai, ArrayList<Card> cards)
 	{
 		Card card = game.getDeck().drawCard(game.getDeadDeck());
@@ -809,6 +812,7 @@ public class Controller
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public void setAIDeck(AI ai)
 	{
 		clearAIDeck(ai);
@@ -816,7 +820,7 @@ public class Controller
 		ArrayList<Card> deck = ai.getDeck();
 
 		int counter = 1;
-
+		
 		for(Card currentCard : deck)
 		{
 			ImageView current = createBackCard();

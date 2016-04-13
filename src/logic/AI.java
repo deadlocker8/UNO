@@ -1,7 +1,6 @@
 package logic;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class AI
 {
@@ -34,7 +33,7 @@ public class AI
 	{
 		return wins;
 	}
-	
+
 	public int getID()
 	{
 		return id;
@@ -53,31 +52,31 @@ public class AI
 	}
 
 	public Card playCard(Card card)
-	{		
-		deck.remove(card);		
+	{
+		deck.remove(card);
 		return card;
 	}
 
 	public ArrayList<Card> getValidCards(Card lastCard, Color wishColor, boolean challenge)
-	{	
-		ArrayList<Card> validCards = new ArrayList<Card>();		
+	{
+		ArrayList<Card> validCards = new ArrayList<Card>();
 		if(challenge)
 		{
 			for(Card currentCard : deck)
-			{	
+			{
 				if(wishColor == null)
 				{
 					if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
 					{
 						validCards.add(currentCard);
 					}
-				}	
+				}
 				else if(wishColor.equals(Color.ALL))
-				{										
+				{
 					if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
 					{
 						validCards.add(currentCard);
-					}						
+					}
 				}
 				else
 				{
@@ -91,23 +90,24 @@ public class AI
 		else
 		{
 			if(wishColor == null)
-			{	
+			{
 				for(Card currentCard : deck)
-				{								
-					if(currentCard.getColor().equals(lastCard.getColor()) || currentCard.getType().equals(lastCard.getType()) || currentCard.getType().equals(CardType.WILD) || currentCard.getType().equals(CardType.DRAW_FOUR))
+				{
+					if(currentCard.getColor().equals(lastCard.getColor()) || currentCard.getType().equals(lastCard.getType()) || currentCard.getType().equals(CardType.WILD)
+							|| currentCard.getType().equals(CardType.DRAW_FOUR))
 					{
 						validCards.add(currentCard);
-					}						
+					}
 				}
 			}
 			else if(wishColor.equals(Color.ALL))
 			{
 				for(Card currentCard : deck)
-				{								
-					if(!currentCard.getType().equals(CardType.WILD) && !currentCard.getType().equals(CardType.DRAW_FOUR))
+				{
+					if( ! currentCard.getType().equals(CardType.WILD) && ! currentCard.getType().equals(CardType.DRAW_FOUR))
 					{
 						validCards.add(currentCard);
-					}						
+					}
 				}
 			}
 			else
@@ -117,11 +117,11 @@ public class AI
 					if(currentCard.getColor().equals(wishColor))
 					{
 						validCards.add(currentCard);
-					}	
+					}
 				}
-			}		
-		}		
-	
+			}
+		}
+
 		return validCards;
 	}
 
@@ -134,7 +134,7 @@ public class AI
 	{
 		return name;
 	}
-	
+
 	public ArrayList<Card> getDeck()
 	{
 		return deck;
@@ -150,50 +150,36 @@ public class AI
 			if(challenge)
 			{
 				System.out.println("draw " + game.getChallengeCounter() + " cards");
-				ArrayList<Card> drawedCards = game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck());	
+				ArrayList<Card> drawedCards = game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck());
 				game.getController().moveCardFromDeckToAI(this, drawedCards);
-				System.out.println("deack after draw: " + deck);				
+				System.out.println("deack after draw: " + deck);
 			}
 			else
 			{
 				System.out.println("draw one card");
 				ArrayList<Card> drawedCards = new ArrayList<Card>();
 				drawedCards.add(game.getDeck().drawCard(game.getDeadDeck()));
-				game.getController().moveCardFromDeckToAI(this, drawedCards);				
-				System.out.println("deack after draw: " + deck);				
-			}		
-		}	
+				game.getController().moveCardFromDeckToAI(this, drawedCards);
+				System.out.println("deack after draw: " + deck);
+			}
+		}
 		else
 		{
 			System.out.println("choose");
 			System.out.println("AI chooses: " + getHighestValuedCard(validDeck));
-			
-			
+
 			Card playedCard = getHighestValuedCard(validDeck);
 			Color newWishColor = null;
-			
+
 			if(playedCard.getType().equals(CardType.WILD) || playedCard.getType().equals(CardType.DRAW_FOUR))
 			{
-				//TODO choose color that is mostly in deck (except black)
-				Random random = new Random();
-				int colorInt = random.nextInt(4) + 1;
-				switch(colorInt)
-				{
-					case 1: newWishColor = Color.YELLOW;
-							break;
-					case 2: newWishColor = Color.RED;
-							break;
-					case 3: newWishColor = Color.BLUE;
-							break;
-					case 4: newWishColor = Color.GREEN;
-							break;
-				}			
+				newWishColor = getBestColor();				
 			}
-			
-			game.getController().moveAICardToDeadDeck(this, game.getCurrentPlayer(), playedCard, newWishColor);			
-		}	
+
+			game.getController().moveAICardToDeadDeck(this, game.getCurrentPlayer(), playedCard, newWishColor);
+		}
 	}
-	
+
 	private Card getHighestValuedCard(ArrayList<Card> validDeck)
 	{
 		Card highestValuedCard = validDeck.get(0);
@@ -204,7 +190,52 @@ public class AI
 				highestValuedCard = currentCard;
 			}
 		}
-		
+
 		return highestValuedCard;
+	}
+
+	private Color getBestColor()
+	{
+		int[] times = new int[4];
+
+		for(Card currentCard : deck)
+		{
+			switch(currentCard.getColor())
+			{
+				case YELLOW:
+					times[0]++;
+					break;
+				case RED:
+					times[0]++;
+					break;
+				case BLUE:
+					times[0]++;
+					break;
+				case GREEN:
+					times[0]++;
+					break;
+				default:
+					break;
+			}
+		}
+
+		int maxIndex = 0;
+		for(int i = 1; i < times.length; i++)
+		{
+			int newnumber = times[i];
+			if((newnumber > times[maxIndex]))
+			{
+				maxIndex = i;
+			}
+		}
+		
+		switch(maxIndex)
+		{
+			case 0:	return Color.YELLOW;
+			case 1: return Color.RED;
+			case 2: return Color.BLUE;
+			case 3: return Color.GREEN;
+			default: return null;
+		}		
 	}
 }

@@ -47,9 +47,9 @@ public class Game
 		}
 		else if(numberOfAIs == 3)
 		{
-			ais.add(new AI("Computer 3", 3, this));
-			ais.add(new AI("Computer 1", 1, this));
-			ais.add(new AI("Computer 2", 2, this));
+			ais.add(new AI("Computer 1", 3, this));
+			ais.add(new AI("Computer 2", 1, this));
+			ais.add(new AI("Computer 3", 2, this));
 		}		
 
 		gameCount = 0;
