@@ -14,7 +14,7 @@ public class Deck
 		
 		for(Color currentColor : Color.values())
 		{			
-			if(currentColor != Color.BLACK)
+			if(currentColor != Color.BLACK && currentColor != Color.ALL)
 			{	
 				cards.add(new Card(CardType.ZERO, currentColor, 0));
 				
@@ -92,28 +92,5 @@ public class Deck
 		return cards;
 	}	
 	
-	//TODO --> refill should let newest card of deadDeck in deadDeck
-	public static void main(String[] args)
-	{
-		Deck deck = new Deck();
-		System.out.println(deck.getCards());
-	//	deck.shuffle();
-		System.out.println(deck.getCards());	
-		System.out.println();
-		
-		DeadDeck deadDeck = new DeadDeck();
-		
-		for(int i = 0; i < 107; i++)
-		{
-			System.out.println(i);
-			
-				Card newCard = deck.drawCard(deadDeck);
-				deadDeck.add(newCard);
-				System.out.println(newCard);	
-				
-				System.out.println(newCard.equals(new Card(CardType.DRAW_TWO, Color.RED, 0)));
-		}	
-		
-		
-	}
+	//TODO --> refill should let newest card of deadDeck in deadDeck	
 }

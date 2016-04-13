@@ -43,13 +43,13 @@ public class AI
 	public void drawCard(Card card)
 	{
 		deck.add(card);
-		game.getController().setAIDeck(this, deck);
+		game.getController().setAIDeck(this);
 	}
 
 	public void drawCards(ArrayList<Card> cards)
 	{
 		deck.addAll(cards);
-		game.getController().setAIDeck(this, deck);
+		game.getController().setAIDeck(this);
 	}
 
 	public Card playCard(Card card)
@@ -59,19 +59,25 @@ public class AI
 	}
 
 	public ArrayList<Card> getValidCards(Card lastCard, Color wishColor, boolean challenge)
-	{
-		ArrayList<Card> validCards = new ArrayList<Card>();
-
+	{	
+		ArrayList<Card> validCards = new ArrayList<Card>();		
 		if(challenge)
 		{
 			for(Card currentCard : deck)
-			{
+			{	
 				if(wishColor == null)
 				{
 					if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
 					{
 						validCards.add(currentCard);
 					}
+				}	
+				else if(wishColor.equals(Color.ALL))
+				{										
+					if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
+					{
+						validCards.add(currentCard);
+					}						
 				}
 				else
 				{
@@ -85,14 +91,23 @@ public class AI
 		else
 		{
 			if(wishColor == null)
-			{
+			{	
 				for(Card currentCard : deck)
-				{
-					if(currentCard.getColor().equals(lastCard.getColor()) || currentCard.getType().equals(lastCard.getType()) || currentCard.getType().equals(CardType.WILD)
-							|| currentCard.getType().equals(CardType.DRAW_FOUR))
+				{								
+					if(currentCard.getColor().equals(lastCard.getColor()) || currentCard.getType().equals(lastCard.getType()) || currentCard.getType().equals(CardType.WILD) || currentCard.getType().equals(CardType.DRAW_FOUR))
 					{
 						validCards.add(currentCard);
-					}
+					}						
+				}
+			}
+			else if(wishColor.equals(Color.ALL))
+			{
+				for(Card currentCard : deck)
+				{								
+					if(!currentCard.getType().equals(CardType.WILD) && !currentCard.getType().equals(CardType.DRAW_FOUR))
+					{
+						validCards.add(currentCard);
+					}						
 				}
 			}
 			else
@@ -102,11 +117,11 @@ public class AI
 					if(currentCard.getColor().equals(wishColor))
 					{
 						validCards.add(currentCard);
-					}
+					}	
 				}
-			}
-		}
-
+			}		
+		}		
+	
 		return validCards;
 	}
 
@@ -134,17 +149,18 @@ public class AI
 		{
 			if(challenge)
 			{
-				drawCards(game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck()));	
 				System.out.println("draw " + game.getChallengeCounter() + " cards");
-				System.out.println("deack after draw: " + deck);
-				game.draw();
+				ArrayList<Card> drawedCards = game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck());	
+				game.getController().moveCardFromDeckToAI(this, drawedCards);
+				System.out.println("deack after draw: " + deck);				
 			}
 			else
 			{
-				drawCard(game.getDeck().drawCard(game.getDeadDeck()));	
 				System.out.println("draw one card");
-				System.out.println("deack after draw: " + deck);
-				game.draw();
+				ArrayList<Card> drawedCards = new ArrayList<Card>();
+				drawedCards.add(game.getDeck().drawCard(game.getDeadDeck()));
+				game.getController().moveCardFromDeckToAI(this, drawedCards);				
+				System.out.println("deack after draw: " + deck);				
 			}		
 		}	
 		else
@@ -174,7 +190,7 @@ public class AI
 				}			
 			}
 			
-			game.getController().moveAICardToDeadDeck(this,game.getCurrentPlayer(), playedCard, newWishColor);			
+			game.getController().moveAICardToDeadDeck(this, game.getCurrentPlayer(), playedCard, newWishColor);			
 		}	
 	}
 	

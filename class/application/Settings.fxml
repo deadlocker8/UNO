@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.65">
+   <children>
+      <VBox layoutX="45.0" layoutY="40.0" prefHeight="320.0" prefWidth="511.0">
+         <children>
+            <HBox prefHeight="44.0" prefWidth="412.0">
+               <children>
+                  <Label alignment="TOP_RIGHT" contentDisplay="TOP" prefHeight="20.0" prefWidth="150.0" text="Gegner:" textAlignment="RIGHT">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Slider blockIncrement="1.0" majorTickUnit="1.0" max="3.0" min="1.0" minorTickCount="0" prefHeight="44.0" prefWidth="230.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                     <HBox.margin>
+                        <Insets left="50.0" />
+                     </HBox.margin>
+                  </Slider>
+               </children>
+            </HBox>
+            <HBox prefHeight="44.0" prefWidth="412.0">
+               <children>
+                  <Label alignment="TOP_RIGHT" contentDisplay="TOP" prefHeight="20.0" prefWidth="150.0" text="Startkarten:">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Slider blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="3.0" minorTickCount="0" prefHeight="44.0" prefWidth="233.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                     <HBox.margin>
+                        <Insets left="50.0" />
+                     </HBox.margin>
+                  </Slider>
+               </children>
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox prefHeight="44.0" prefWidth="412.0">
+               <children>
+                  <Label alignment="TOP_RIGHT" contentDisplay="TOP" prefHeight="20.0" prefWidth="150.0" text="Gegner Schnelligkeit:">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </Label>
+                  <Slider blockIncrement="1.0" majorTickUnit="1.0" max="4.0" min="1.0" minorTickCount="0" prefHeight="44.0" prefWidth="233.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                     <HBox.margin>
+                        <Insets left="50.0" />
+                     </HBox.margin>
+                  </Slider>
+               </children>
+               <VBox.margin>
+                  <Insets top="25.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

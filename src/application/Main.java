@@ -17,7 +17,7 @@ public class Main extends Application
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("MainGUI.fxml"));
 			Parent root = (Parent)loader.load();
 
-			Scene scene = new Scene(root, 800, 600);
+			Scene scene = new Scene(root, 800, 650);
 
 			stage.setResizable(true);
 			stage.setTitle("UNO");
@@ -27,6 +27,7 @@ public class Main extends Application
 			controller.setStage(stage);			
 			controller.init();			
 			
+			//TODO set minWidth and Height
 			stage.getIcons().add(new Image("images/icon.png"));
 			stage.show();		
 		}

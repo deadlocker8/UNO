@@ -3,6 +3,9 @@ package logic;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 import application.Controller;
 
 public class Game
@@ -23,6 +26,7 @@ public class Game
 	private boolean skipped;
 	private int counter;
 	private boolean running;
+	private boolean showingInfo;
 	
 	public Game(Controller controller, int numberOfAIs)
 	{
@@ -31,10 +35,22 @@ public class Game
 		deadDeck = new DeadDeck();
 		player = new Player("Spieler", this);
 		ais = new ArrayList<AI>();
-		for(int i = 1; i <= numberOfAIs; i++)
+		
+		if(numberOfAIs == 1)
 		{
-			ais.add(new AI("AI " + i, i-1, this));
+			ais.add(new AI("Computer 1", 1, this));
 		}
+		else if(numberOfAIs == 2)
+		{
+			ais.add(new AI("Computer 1", 1, this));
+			ais.add(new AI("Computer 2", 2, this));
+		}
+		else if(numberOfAIs == 3)
+		{
+			ais.add(new AI("Computer 3", 3, this));
+			ais.add(new AI("Computer 1", 1, this));
+			ais.add(new AI("Computer 2", 2, this));
+		}		
 
 		gameCount = 0;
 		challengeCounter = 0;
@@ -42,7 +58,7 @@ public class Game
 
 	public void newGame(int numberOfStartingCards)
 	{
-		deck = new Deck();
+		deck = new Deck();	
 		deck.shuffle();
 		deadDeck = new DeadDeck();
 		gameCount++;
@@ -51,8 +67,10 @@ public class Game
 		wishColor = null;
 		challenge = false;
 		direction = Direction.RIGHT;
+		controller.setImageViewDirection(Direction.RIGHT);		
 		lastPlayerDraw = false;
 		skipped = false;
+		showingInfo = false;
 
 		player.initialize();
 
@@ -65,16 +83,28 @@ public class Game
 		}
 		
 		deadDeck.add(deck.drawCard(deadDeck));
-		lastCard = deadDeck.getCards().get(deadDeck.getCards().size()-1);	
+		lastCard = deadDeck.getCards().get(deadDeck.getCards().size()-1);			
+		
 		controller.setLastCard(lastCard);	
-		if(lastCard.getType().equals(CardType.DRAW_FOUR) || lastCard.getType().equals(CardType.WILD))
+		if(lastCard.getType().equals(CardType.WILD))
 		{
 			wishColor = Color.ALL;
 			controller.chosenWishColor = wishColor;
 			controller.showCircleWishColor(wishColor);
 		}
-		
-		start();
+		else if(lastCard.getType().equals(CardType.DRAW_FOUR))
+		{
+			wishColor = Color.ALL;
+			controller.chosenWishColor = wishColor;
+			controller.showCircleWishColor(wishColor);
+			challenge = true;
+			challengeCounter = 4;
+		}
+		else if(lastCard.getType().equals(CardType.DRAW_TWO))
+		{			
+			challenge = true;
+			challengeCounter = 2;
+		}
 	}
 
 	public int getGameCount()
@@ -123,15 +153,15 @@ public class Game
 				if(direction.equals(Direction.RIGHT))
 				{
 					direction = Direction.LEFT;
+					controller.setImageViewDirection(Direction.LEFT);		
+
 				}
 				else
 				{
 					direction = Direction.RIGHT;
-				}
-				//TODO show icon direction in UI
-			}	
-							
-			//TODO mark currentPlayer in UI
+					controller.setImageViewDirection(Direction.RIGHT);	
+				}				
+			}		
 			
 			if(currentPlayer == 1)
 			{			
@@ -148,7 +178,17 @@ public class Game
 				
 				controller.setLabelCurrentPlayer(currentAI.getName() + " ist am Zug");
 				
-				controller.setAIDeck(currentAI, currentAI.getDeck());					
+				controller.setAIDeck(currentAI);	
+				
+				try
+				{
+					Thread.sleep(500);
+				}
+				catch(InterruptedException e)
+				{
+					//ERRORHANDLING
+					e.printStackTrace();
+				}
 				
 				currentAI.turn(lastCard, wishColor, challenge);							
 			}
@@ -194,9 +234,7 @@ public class Game
 	}
 
 	private void end(String name)
-	{
-		//TODO alert 
-		
+	{			
 		controller.clearAllDecks(ais);
 		
 		System.err.println("Player " + name + " wins!");
@@ -206,11 +244,31 @@ public class Game
 		if(currentPlayer == 1)
 		{
 			controller.setLabelCurrentPlayer(player.getName() + " gewinnt!");
+			
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Sieg!");
+			alert.setHeaderText("");
+			alert.setContentText("Du gewinnst");
+			alert.initOwner(controller.stage);
+			Stage dialogStage = (Stage)alert.getDialogPane().getScene().getWindow();
+			dialogStage.getIcons().add(controller.icon);
+			alert.show();
 		}
 		else
 		{
 			controller.setLabelCurrentPlayer(ais.get(currentPlayer - 2).getName() + " gewinnt!");
-		}		
+			
+			Alert alert = new Alert(AlertType.INFORMATION);
+			alert.setTitle("Niederlage!");
+			alert.setHeaderText("");
+			alert.setContentText(ais.get(currentPlayer - 2).getName() + " hat gewonnen.");
+			alert.initOwner(controller.stage);
+			Stage dialogStage = (Stage)alert.getDialogPane().getScene().getWindow();
+			dialogStage.getIcons().add(controller.icon);
+			alert.show();
+		}	
+		
+		
 	}
 
 	public Deck getDeck()
@@ -233,6 +291,11 @@ public class Game
 		return player;
 	}
 	
+	public ArrayList<AI> getAIs()
+	{
+		return ais;
+	}
+	
 	public boolean isRunning()
 	{
 		return running;
@@ -248,11 +311,22 @@ public class Game
 		return controller;
 	}
 	
+	public boolean isShowingInfo()
+	{
+		return showingInfo;
+	}
+	
+	public void setShowingInfo(boolean showingInfo)
+	{
+		this.showingInfo = showingInfo;
+	}
+	
 	public void draw()
 	{		
 		challenge = false;
 		challengeCounter = 0;	
 		lastPlayerDraw = true;
+		controller.hideLabelChallengeCounter();
 		
 		run();
 	}		
@@ -267,16 +341,19 @@ public class Game
 		{
 			challenge = true;
 			challengeCounter += 2;
+			controller.showLabelChallengeCounter("Verlierer zieht " + challengeCounter + " Karten");
 		}	
 		else if(card.getType().equals(CardType.DRAW_FOUR))
 		{
 			challenge = true;
-			challengeCounter += 4;			
+			challengeCounter += 4;
+			controller.showLabelChallengeCounter("Verlierer zieht " + challengeCounter + " Karten");
 		}
 		else
 		{
 			challenge = false;
 			challengeCounter = 0;
+			controller.hideLabelChallengeCounter();
 		}
 		
 		lastPlayerDraw = false;

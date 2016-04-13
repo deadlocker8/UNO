@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import logic.Color;
 
 public class ColorChooserController
@@ -57,6 +58,13 @@ public class ColorChooserController
 			}
 		});
 		
-		//TODO prevent closing without choosing a color --> but cancel button
+		stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+		{
+			@Override
+			public void handle(WindowEvent event)
+			{
+				event.consume();				
+			}
+		});
 	}
 }

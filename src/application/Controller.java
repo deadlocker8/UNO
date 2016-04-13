@@ -20,12 +20,14 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -34,7 +36,9 @@ import logic.AI;
 import logic.Card;
 import logic.CardType;
 import logic.Color;
+import logic.Direction;
 import logic.Game;
+import logic.Player;
 
 public class Controller
 {
@@ -44,99 +48,233 @@ public class Controller
 	@FXML private AnchorPane mainPane;
 	@FXML private Label labelWishColor;
 	@FXML private Circle circleWishColor;
+	@FXML private ImageView imageViewWishColor;
+	@FXML private HBox hboxInfo;
+	@FXML private Label labelInfo;
+	@FXML private Button buttonInfo;
+	@FXML private Label labelChallengeCounter;
+	@FXML private ImageView imageViewDirection;
+	@FXML private Label labelDirection;
+	@FXML private Label labelAI1Name;
+	@FXML private Label labelAI2Name;
+	@FXML private Label labelAI3Name;
+	@FXML private Button buttonStart;	
 	
+
 	public Game game;
 	public Color chosenWishColor;
+	public int drawCounter;
 
 	public Stage stage;
 	public Image icon = new Image("images/icon.png");
 	private final ResourceBundle bundle = ResourceBundle.getBundle("application/", Locale.GERMANY);
-	
+
 	private final double CARD_HEIGHT = 90.0;
-	private final double CARD_WIDTH = 57.0;	
-	private final double CARD_SPACING_HORIZONTAL_LARGE = 14.0;
-	private final double CARD_SPACING_HORIZONTAL_MEDIUM = -3.0;
-	private final double CARD_SPACING_HORIZONTAL_SMALL = -25.0;	
-	private final double CARD_SPACING_HORIZONTAL_ULTRA_SMALL = -35.0;	
+	private final double CARD_WIDTH = 57.0;
 	
+	private final double CARD_SPACING_LARGE = 14.0;
+	private final double CARD_SPACING_MEDIUM = - 3.0;
+	private final double CARD_SPACING_SMALL = - 25.0;
+	private final double CARD_SPACING_ULTRA_SMALL = - 35.0;	
+
 	private Point2D PLAYER_STARTING_POINT;
-	private final Point2D AI_1_STARTING_POINT = new Point2D(100.0, 30.0);
-	
+	private final Point2D AI_1_STARTING_POINT = new Point2D(100.0, 50.0);	
+	private Point2D AI_2_STARTING_POINT;
+	private Point2D AI_3_STARTING_POINT;
+
 	private final javafx.scene.paint.Color COLOR_YELLOW = javafx.scene.paint.Color.web("#FFAA00");
 	private final javafx.scene.paint.Color COLOR_RED = javafx.scene.paint.Color.web("#FF5555");
 	private final javafx.scene.paint.Color COLOR_BLUE = javafx.scene.paint.Color.web("#5555FD");
-	private final javafx.scene.paint.Color COLOR_GREEN = javafx.scene.paint.Color.web("#55AA55");
-	private final javafx.scene.paint.Color COLOR_CARD_INVALID = javafx.scene.paint.Color.web("#CCCCCC");
-	
-		
+	private final javafx.scene.paint.Color COLOR_GREEN = javafx.scene.paint.Color.web("#55AA55");	
+
 	public void init()
 	{
-		PLAYER_STARTING_POINT = new Point2D(100.0, stage.getScene().getHeight() - 30.0 - CARD_HEIGHT);
-		
+		imageViewWishColor.setImage(new Image("/images/circle-all.png"));
+
+		PLAYER_STARTING_POINT = new Point2D(100.0, stage.getScene().getHeight() - 60.0 - CARD_HEIGHT);
+		AI_2_STARTING_POINT = new Point2D(stage.getScene().getWidth() - CARD_HEIGHT - 30, 50.0);
+		AI_3_STARTING_POINT = new Point2D(60.0, 50.0);
+
 		iconDeck.setImage(createEmptyBackCard());
 		iconDeck.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
 		{
 			@Override
 			public void handle(MouseEvent event)
 			{
-				if(game.isRunning() && game.getCurrentPlayer() == 1)
+				if(game.isRunning() && game.getCurrentPlayer() == 1 && !game.isShowingInfo())
 				{
-					game.getPlayer().drawCard(game.getDeck().drawCard(game.getDeadDeck()));
-					setPlayerDeck(game.getPlayer().getDeck());
-
-					// TODO move card toPlayerDeck moveCardToDeadDeck(imageView,
-					// card, newWishColor);
-					// --> in "onFinish"
-					game.draw();
+					Card drawedCard = game.getDeck().drawCard(game.getDeadDeck());
+					ArrayList<Card> allCards = new ArrayList<Card>();
+					allCards.add(drawedCard);				
+					moveCardFromDeckToPlayer(allCards);			
 				}
 			}
 		});
+		
+		hideWishColor();
+		hideInfo();
+		hideLabelChallengeCounter();
+		setImageViewDirection(Direction.RIGHT);		
+		labelAI1Name.setVisible(false);
+		labelAI2Name.setVisible(false);
+		labelAI3Name.setVisible(false);
+		buttonStart.setVisible(false);
 
-	
 		startGame();
 	}
 
 	public void setStage(Stage stage)
 	{
-		this.stage = stage;	
+		this.stage = stage;
 	}
 
 	public void startGame()
 	{
-		hideCircleWishColor();
+		hideWishColor();		
+		hideInfo();
+		hideLabelChallengeCounter();
 		
-		// DEBUG
-		game = new Game(this, 1);
+		drawCounter = 0;		
+
+		// DEBUG	
+		game = new Game(this, 3);
+		setLabelNames(game.getPlayer(), game.getAIs());
 		game.newGame(5);
+		
+		buttonStart.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				buttonStart.setVisible(false);
+				game.start();				
+			}
+		});
+		buttonStart.setVisible(true);		
 	}
 	
-	public void showCircleWishColor(Color color)
-	{
-		switch(color)
+	public void setLabelNames(Player player, ArrayList<AI> ais)
+	{	
+		labelAI2Name.setVisible(false);
+		labelAI3Name.setVisible(false);
+		
+		labelAI1Name.setText(ais.get(0).getName());
+		labelAI1Name.setVisible(true);		
+		
+		if(ais.size() >= 2)
 		{
-			case YELLOW:	circleWishColor.setFill(COLOR_YELLOW);
-							break;
-			case RED:		circleWishColor.setFill(COLOR_RED);
-							break;
-			case BLUE:		circleWishColor.setFill(COLOR_BLUE);
-							break;
-			case GREEN:		circleWishColor.setFill(COLOR_GREEN);
-							break;
-			case ALL:		//TODO show quartered circle (all four colors)
-							break;
-			default: 		break;
+			labelAI2Name.setText(ais.get(1).getName());
+			labelAI2Name.setVisible(true);
 		}
 		
-		labelWishColor.setVisible(true);
-		circleWishColor.setVisible(true);	
+		if(ais.size() == 3)
+		{			
+			labelAI3Name.setText(ais.get(2).getName());
+			labelAI3Name.setVisible(true);
+		}
 	}
 	
+
+	public void showCircleWishColor(Color color)
+	{
+		hideImageViewWishColor();
+
+		switch(color)
+		{
+			case YELLOW:
+				circleWishColor.setFill(COLOR_YELLOW);
+				circleWishColor.setVisible(true);
+				break;
+			case RED:
+				circleWishColor.setFill(COLOR_RED);
+				circleWishColor.setVisible(true);
+				break;
+			case BLUE:
+				circleWishColor.setFill(COLOR_BLUE);
+				circleWishColor.setVisible(true);
+				break;
+			case GREEN:
+				circleWishColor.setFill(COLOR_GREEN);
+				circleWishColor.setVisible(true);
+				break;
+			case ALL:
+				showImageViewWishColor();
+				break;
+			default:
+				break;
+		}
+
+		labelWishColor.setVisible(true);
+	}
+
+	public void showImageViewWishColor()
+	{
+		hideCircleWishColor();
+
+		imageViewWishColor.setVisible(true);
+	}
+
 	public void hideCircleWishColor()
 	{
 		labelWishColor.setVisible(false);
-		circleWishColor.setVisible(false);	
+		circleWishColor.setVisible(false);
+	}
+
+	public void hideImageViewWishColor()
+	{
+		imageViewWishColor.setVisible(false);
+		circleWishColor.setVisible(false);
+	}
+
+	public void hideWishColor()
+	{
+		hideCircleWishColor();
+		hideImageViewWishColor();
+	}
+
+	public void hideInfo()
+	{		
+		hboxInfo.setVisible(false);
+	}
+
+	public void showInfo(String text, int numberOfCards)
+	{
+		labelInfo.setText(text);
+		buttonInfo.setOnAction(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				moveCardFromDeckToPlayer(game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck()));				
+			}
+		});
+
+		hboxInfo.setVisible(true);
 	}
 	
+	public void hideLabelChallengeCounter()
+	{
+		labelChallengeCounter.setVisible(false);
+	}
+	
+	public void showLabelChallengeCounter(String text)
+	{
+		labelChallengeCounter.setText(text);
+		labelChallengeCounter.setVisible(true);
+	}
+	
+	public void setImageViewDirection(Direction direction)
+	{
+		if(direction.equals(Direction.RIGHT))
+		{
+			imageViewDirection.setImage(new Image("/images/DIRECTION_RIGHT.png"));
+		}
+		else
+		{
+			imageViewDirection.setImage(new Image("/images/DIRECTION_LEFT.png"));
+		}
+	}
+
 	public void setLabelCurrentPlayer(String text)
 	{
 		labelCurrentPlayer.setText(text);
@@ -169,14 +307,16 @@ public class Controller
 
 		if(!valid)
 		{
-			WritableImage snapshot = imageView.snapshot(new SnapshotParameters(), null);
-			
+			SnapshotParameters parameters = new SnapshotParameters();
+			parameters.setFill(javafx.scene.paint.Color.TRANSPARENT);
+			WritableImage snapshot = imageView.snapshot(parameters, null);
+
 			if(card.getType().equals(CardType.DRAW_FOUR) && card.getType().equals(CardType.WILD))
 			{
 				for(int x = 0; x < snapshot.getWidth(); x++)
 				{
 					for(int y = 0; y < snapshot.getHeight(); y++)
-					{					
+					{
 						javafx.scene.paint.Color oldColor = snapshot.getPixelReader().getColor(x, y).desaturate().desaturate().brighter();
 						snapshot.getPixelWriter().setColor(x, y, new javafx.scene.paint.Color(oldColor.getRed(), oldColor.getGreen(), oldColor.getBlue(), oldColor.getOpacity() * 1.0));
 					}
@@ -188,14 +328,13 @@ public class Controller
 				for(int x = 0; x < snapshot.getWidth(); x++)
 				{
 					for(int y = 0; y < snapshot.getHeight(); y++)
-					{					
-						javafx.scene.paint.Color oldColor = snapshot.getPixelReader().getColor(x, y).desaturate().desaturate().desaturate();
+					{
+						javafx.scene.paint.Color oldColor = snapshot.getPixelReader().getColor(x, y).darker().desaturate();						
 						snapshot.getPixelWriter().setColor(x, y, new javafx.scene.paint.Color(oldColor.getRed(), oldColor.getGreen(), oldColor.getBlue(), oldColor.getOpacity() * 1.0));
 					}
 				}
 				imageView.setImage(snapshot);
 			}
-			
 		}
 		Controller main = this;
 
@@ -240,7 +379,7 @@ public class Controller
 							chosenWishColor = null;
 						}
 
-						moveCardToDeadDeck(imageView, card, chosenWishColor);					
+						moveCardToDeadDeck(imageView, card, chosenWishColor);
 					}
 				}
 			}
@@ -250,18 +389,18 @@ public class Controller
 	}
 
 	public void moveCardToDeadDeck(ImageView view, Card card, Color newWishColor)
-	{			
-		Point2D deckPosition = iconLastCard.localToScene(Point2D.ZERO);	
-	
+	{
+		Point2D deckPosition = iconLastCard.localToScene(Point2D.ZERO);
+
 		TranslateTransition translateTransition = new TranslateTransition();
 		translateTransition.setDuration(Duration.millis(500));
 		translateTransition.setNode(view);
 		translateTransition.setCycleCount(1);
-		translateTransition.setAutoReverse(false);	
+		translateTransition.setAutoReverse(false);
 		translateTransition.setFromX(0);
 		translateTransition.setFromY(0);
-		translateTransition.setToX(- (view.getX() - deckPosition.getX()));
-		translateTransition.setToY(- (view.getY() - deckPosition.getY()));	
+		translateTransition.setToX( - (view.getX() - deckPosition.getX()));
+		translateTransition.setToY( - (view.getY() - deckPosition.getY()));
 		translateTransition.setOnFinished(new EventHandler<ActionEvent>()
 		{
 			@Override
@@ -273,10 +412,10 @@ public class Controller
 				}
 				else
 				{
-					hideCircleWishColor();
+					hideWishColor();
 				}
 				setPlayerDeck(game.getPlayer().getDeck());
-				game.playCard(game.getPlayer().playCard(card), newWishColor);				
+				game.playCard(game.getPlayer().playCard(card), newWishColor);
 			}
 		});
 
@@ -286,33 +425,33 @@ public class Controller
 	public void moveAICardToDeadDeck(AI ai, int currentPlayer, Card card, Color newWishColor)
 	{
 		ObservableList<Node> nodes = mainPane.getChildren();
-		ArrayList<Integer> possibleNodes = new ArrayList<Integer>();		
-		for(int i = 0; i < nodes.size(); i++) 
+		ArrayList<Integer> possibleNodes = new ArrayList<Integer>();
+		for(int i = 0; i < nodes.size(); i++)
 		{
-			Node current = nodes.get(i);		
+			Node current = nodes.get(i);
 			if(current.getId().contains("ai" + ai.getID()))
-			{							
-				possibleNodes.add(i);				
+			{
+				possibleNodes.add(i);
 			}
-		}				
-	
+		}
+
 		Random random = new Random();
-		int viewNumber = random.nextInt(possibleNodes.size());	
+		int viewNumber = random.nextInt(possibleNodes.size());
 
-		ImageView view = (ImageView)mainPane.getChildren().get(possibleNodes.get(viewNumber));		
-		view.setImage(new Image("images/" + card.getType() + "-" + card.getColor() + ".png"));		
+		ImageView view = (ImageView)mainPane.getChildren().get(possibleNodes.get(viewNumber));
+		view.setImage(new Image("images/" + card.getType() + "-" + card.getColor() + ".png"));
 
-		Point2D deckPosition = iconLastCard.localToScene(Point2D.ZERO);	
-		
+		Point2D deckPosition = iconLastCard.localToScene(Point2D.ZERO);
+
 		TranslateTransition translateTransition = new TranslateTransition();
 		translateTransition.setDuration(Duration.millis(500));
 		translateTransition.setNode(view);
 		translateTransition.setCycleCount(1);
-		translateTransition.setAutoReverse(false);	
+		translateTransition.setAutoReverse(false);
 		translateTransition.setFromX(0);
 		translateTransition.setFromY(0);
-		translateTransition.setToX(- (view.getX() - deckPosition.getX()));
-		translateTransition.setToY(- (view.getY() - deckPosition.getY()));	
+		translateTransition.setToX( - (view.getX() - deckPosition.getX()));
+		translateTransition.setToY( - (view.getY() - deckPosition.getY()));
 		translateTransition.setOnFinished(new EventHandler<ActionEvent>()
 		{
 			@Override
@@ -324,21 +463,234 @@ public class Controller
 				}
 				else
 				{
-					hideCircleWishColor();
+					hideWishColor();
 				}
-				setAIDeck(ai, ai.getDeck());
+				setAIDeck(ai);
 				game.playCard(ai.playCard(card), newWishColor);
 			}
 		});
 
-		translateTransition.play();	
+		translateTransition.play();
 	}
 	
+	public void moveCardFromDeckToPlayer(ArrayList<Card> cards)
+	{
+		Point2D deckPosition = iconDeck.localToScene(Point2D.ZERO);
+		
+		ImageView view = createCard(cards.get(drawCounter), true);
+		view.setId("drawAnimation");
+		view.setX(deckPosition.getX());
+		view.setY(deckPosition.getY());
+		mainPane.getChildren().add(view);	
+		
+		TranslateTransition translateTransition = new TranslateTransition();
+		translateTransition.setDuration(Duration.millis(500));
+		translateTransition.setNode(view);
+		translateTransition.setCycleCount(1);
+		translateTransition.setAutoReverse(false);
+		translateTransition.setFromX(0);
+		translateTransition.setFromY(0);
+		translateTransition.setToX( - (view.getX() - getPositionOfRightCard(null)));
+		translateTransition.setToY( - (view.getY() - PLAYER_STARTING_POINT.getY()));
+		translateTransition.setOnFinished(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				ObservableList<Node> nodes = mainPane.getChildren();
+				Iterator<Node> iterator = nodes.iterator();
+				while(iterator.hasNext())
+				{
+					if(iterator.next().getId().equals("drawAnimation"))
+					{
+						iterator.remove();
+					}
+				}
+				
+				game.getPlayer().drawCard(cards.get(drawCounter));
+				setPlayerDeck(game.getPlayer().getDeck());
+				drawCounter++;
+				
+				if(drawCounter < cards.size())
+				{				
+					moveCardFromDeckToPlayer(cards);
+				}
+				else				
+				{
+					game.setShowingInfo(false);
+					hideInfo();
+					drawCounter = 0;
+					game.draw();
+				}						
+			}
+		});
+
+		translateTransition.play();
+	}
+	
+	private double getPositionOfRightCard(AI ai)
+	{	
+		if(ai == null)
+		{
+			double maxWidth = stage.getScene().getWidth() - (PLAYER_STARTING_POINT.getX() * 2) - CARD_WIDTH;
+			int deckSize = game.getPlayer().getDeckSize();
+			if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
+			{
+				if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
+				{
+					if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
+					{
+						return (PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+					}
+					else
+					{
+						return (PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_SMALL)));
+					}
+				}
+				else
+				{
+					return (PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+				}
+			}
+			else
+			{
+				return (PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_LARGE)));
+			}	
+		}
+		//AI 1 (Above Player)
+		else
+		{
+			double maxWidth = stage.getScene().getWidth() - (AI_1_STARTING_POINT.getX() * 2) - CARD_WIDTH;
+			int deckSize = ai.getDeckSize();
+			if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
+			{
+				if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
+				{
+					if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
+					{
+						return (AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+					}
+					else
+					{
+						return (AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_SMALL)));
+					}
+				}
+				else
+				{
+					return (AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+				}
+			}
+			else
+			{
+				return (AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_LARGE)));
+			}	
+		}		
+	}
+	
+	private double getPositionOfBottomCard(AI ai)
+	{			
+		double maxHeight = stage.getScene().getHeight() - ((AI_2_STARTING_POINT.getY() + 50.0) * 2) - CARD_WIDTH;
+		int deckSize = ai.getDeckSize();					
+
+		if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxHeight)
+		{
+			if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxHeight)
+			{
+				if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxHeight)
+				{
+					return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL));
+				}
+				else
+				{
+					return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_SMALL));
+				}
+			}
+			else
+			{
+				return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_MEDIUM));
+			}
+		}
+		else
+		{
+			return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_LARGE));
+		}			
+	}
+	
+	public void moveCardFromDeckToAI(AI ai, ArrayList<Card> cards)
+	{
+		Card card = game.getDeck().drawCard(game.getDeadDeck());
+		
+		Point2D deckPosition = iconDeck.localToScene(Point2D.ZERO);
+		
+		ImageView view = createBackCard();
+		view.setId("drawAnimation");
+		view.setX(deckPosition.getX());
+		view.setY(deckPosition.getY());
+		mainPane.getChildren().add(view);	
+		
+		TranslateTransition translateTransition = new TranslateTransition();
+		translateTransition.setDuration(Duration.millis(500));
+		translateTransition.setNode(view);
+		translateTransition.setCycleCount(1);
+		translateTransition.setAutoReverse(false);
+		translateTransition.setFromX(0);
+		translateTransition.setFromY(0);
+		
+		switch(ai.getID())
+		{
+			case 1:		translateTransition.setToX( - (view.getX() - getPositionOfRightCard(ai)));
+						translateTransition.setToY( - (view.getY() - AI_1_STARTING_POINT.getY()));
+						break;
+			case 2:		translateTransition.setToX( - (view.getX() - AI_2_STARTING_POINT.getX()));
+						translateTransition.setToY( - (view.getY() - getPositionOfBottomCard(ai)));
+						break;				
+			case 3:		translateTransition.setToX( - (view.getX() - AI_3_STARTING_POINT.getX()));
+						translateTransition.setToY( - (view.getY() - getPositionOfBottomCard(ai)));
+						break;				
+			default:	break;
+		}
+	
+		translateTransition.setOnFinished(new EventHandler<ActionEvent>()
+		{
+			@Override
+			public void handle(ActionEvent event)
+			{
+				ObservableList<Node> nodes = mainPane.getChildren();
+				Iterator<Node> iterator = nodes.iterator();
+				while(iterator.hasNext())
+				{
+					if(iterator.next().getId().equals("drawAnimation"))
+					{
+						iterator.remove();
+					}
+				}
+				
+				ai.drawCard(cards.get(drawCounter));
+				setAIDeck(ai);
+				drawCounter++;
+				
+				if(drawCounter < cards.size())
+				{				
+					moveCardFromDeckToAI(ai, cards);
+				}
+				else				
+				{
+					game.setShowingInfo(false);
+					hideInfo();
+					drawCounter = 0;
+					game.draw();
+				}						
+			}
+		});
+
+		translateTransition.play();
+	}
+
 	public void clearPlayerDeck()
 	{
 		ObservableList<Node> nodes = mainPane.getChildren();
 		Iterator<Node> iterator = nodes.iterator();
-		while(iterator.hasNext()) 
+		while(iterator.hasNext())
 		{
 			if(iterator.next().getId().equals("player"))
 			{
@@ -348,42 +700,44 @@ public class Controller
 	}
 
 	public void setPlayerDeck(ArrayList<Card> deck)
-	{	
+	{
 		clearPlayerDeck();
-		
+
 		int counter = 1;
-		
+
 		for(Card currentCard : deck)
 		{
 			ImageView current = createCard(currentCard, true);
-			
+
 			current.setId("player");
 			mainPane.getChildren().add(current);
-			if((deck.size() * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_LARGE)) > (stage.getScene().getWidth() - PLAYER_STARTING_POINT.getX() * 2))
+			
+			double maxWidth = stage.getScene().getWidth() - (PLAYER_STARTING_POINT.getX() * 2) - CARD_WIDTH;
+			if((deck.size() * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
 			{
-				if((deck.size() * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_MEDIUM)) > (stage.getScene().getWidth() - PLAYER_STARTING_POINT.getX() * 2))
+				if((deck.size() * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
 				{
-					if((deck.size() * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_SMALL)) > (stage.getScene().getWidth() - PLAYER_STARTING_POINT.getX() * 2))
+					if((deck.size() * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
 					{
-						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_ULTRA_SMALL)));
+						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
 					}
 					else
 					{
-						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_SMALL)));
+						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
 					}
 				}
 				else
 				{
-					current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_MEDIUM)));	
+					current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
 				}
 			}
 			else
 			{
-				current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_LARGE)));	
+				current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
 			}
-			
-			current.setY(PLAYER_STARTING_POINT.getY());		
-			
+
+			current.setY(PLAYER_STARTING_POINT.getY());
+
 			counter++;
 		}
 	}
@@ -391,62 +745,62 @@ public class Controller
 	public void setValidPlayerDeck(ArrayList<Card> deck, ArrayList<Card> validDeck)
 	{
 		clearPlayerDeck();
-		
+
 		int counter = 1;
-		
+
 		for(Card currentCard : deck)
 		{
 			ImageView current;
-					
+
 			if(validDeck.contains(currentCard))
 			{
 				current = createCard(currentCard, true);
+				current.setY(PLAYER_STARTING_POINT.getY() - CARD_HEIGHT/4);
 			}
 			else
 			{
 				current = createCard(currentCard, false);
+				current.setY(PLAYER_STARTING_POINT.getY());
 			}
-			
+
 			current.setId("player");
 
 			mainPane.getChildren().add(current);
-			
+
 			double maxWidth = stage.getScene().getWidth() - (PLAYER_STARTING_POINT.getX() * 2) - CARD_WIDTH;
-			
-			if((deck.size() * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_LARGE)) > maxWidth)
+
+			if((deck.size() * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
 			{
-				if((deck.size() * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_MEDIUM)) > maxWidth)
+				if((deck.size() * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
 				{
-					if((deck.size() * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_SMALL)) > maxWidth)
+					if((deck.size() * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
 					{
-						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_ULTRA_SMALL)));
+						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
 					}
 					else
 					{
-						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_SMALL)));
+						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
 					}
 				}
 				else
 				{
-					current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_MEDIUM)));	
+					current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
 				}
 			}
 			else
 			{
-				current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_LARGE)));	
+				current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
 			}
-			
-			current.setY(PLAYER_STARTING_POINT.getY());							
 			
 			counter++;
 		}
 	}
-	
+
 	public void clearAIDeck(AI ai)
 	{
 		ObservableList<Node> nodes = mainPane.getChildren();
 		Iterator<Node> iterator = nodes.iterator();
-		while(iterator.hasNext()) 
+		while(iterator.hasNext())
 		{
 			if(iterator.next().getId().contains("ai" + ai.getID()))
 			{
@@ -454,59 +808,135 @@ public class Controller
 			}
 		}
 	}
-	
-	public void setAIDeck(AI ai, ArrayList<Card> deck)
+
+	public void setAIDeck(AI ai)
 	{
 		clearAIDeck(ai);
 		
+		ArrayList<Card> deck = ai.getDeck();
+
 		int counter = 1;
-		
+
 		for(Card currentCard : deck)
 		{
 			ImageView current = createBackCard();
-			
+
 			current.setId("ai" + ai.getID());
 			
-			//TODO other AIs (vertical) --> flip imageViews by 90 degrees
 			mainPane.getChildren().add(current);
-			double maxWidth = stage.getScene().getWidth() - (AI_1_STARTING_POINT.getX() * 2) - CARD_WIDTH;
 			
-			if((deck.size() * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_LARGE)) > maxWidth)
-			{
-				if((deck.size() * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_MEDIUM)) > maxWidth)
-				{
-					if((deck.size() * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_SMALL)) > maxWidth)
-					{
-						current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_ULTRA_SMALL)));
-					}
-					else
-					{
-						current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_SMALL)));
-					}
-				}
-				else
-				{
-					current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_MEDIUM)));	
-				}
-			}
-			else
-			{
-				current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_HORIZONTAL_LARGE)));	
-			}				
+			double maxWidth;
+			double maxHeight;
+			int deckSize;
 			
-			counter++;		
-		}		
+			switch(ai.getID())
+			{
+				case 1:	maxWidth = stage.getScene().getWidth() - ((AI_1_STARTING_POINT.getX() + 25.0) * 2) - CARD_WIDTH;
+						deckSize = ai.getDeckSize();
+
+						if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
+						{
+							if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
+							{
+								if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
+								{
+									current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+								}
+								else
+								{
+									current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
+								}
+							}
+							else
+							{
+								current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+							}
+						}
+						else
+						{
+							current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
+						}
+		
+						current.setY(AI_1_STARTING_POINT.getY());
+						break;
+						
+				case 2:	maxHeight = stage.getScene().getHeight() - ((AI_2_STARTING_POINT.getY() + 50.0) * 2) - CARD_WIDTH;
+						deckSize = ai.getDeckSize();
+						
+						current.setRotate(90.0);
+		
+						if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxHeight)
+						{
+							if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxHeight)
+							{
+								if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxHeight)
+								{
+									current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+								}
+								else
+								{
+									current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
+								}
+							}
+							else
+							{
+								current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+							}
+						}
+						else
+						{
+							current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
+						}
+		
+						current.setX(AI_2_STARTING_POINT.getX());
+						break;
+						
+				case 3:	maxHeight = stage.getScene().getHeight() - ((AI_3_STARTING_POINT.getY() + 50.0) * 2) - CARD_WIDTH;
+						deckSize = ai.getDeckSize();
+						
+						current.setRotate(90.0);
+		
+						if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxHeight)
+						{
+							if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxHeight)
+							{
+								if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxHeight)
+								{
+									current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+								}
+								else
+								{
+									current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
+								}
+							}
+							else
+							{
+								current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+							}
+						}
+						else
+						{
+							current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
+						}
+		
+						current.setX(AI_3_STARTING_POINT.getX());
+						break;
+				default: break;
+			}	
+			
+			counter++;
+		}
 	}
-	
+
 	public void clearAllDecks(ArrayList<AI> ais)
 	{
 		clearPlayerDeck();
-		
+
 		for(AI currentAI : ais)
 		{
 			clearAIDeck(currentAI);
-		}		
-	}
+		}
+	}	
 
 	public void about()
 	{

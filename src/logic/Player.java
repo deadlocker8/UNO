@@ -42,6 +42,7 @@ public class Player
 	{
 		deck.addAll(cards);
 		game.getController().setPlayerDeck(deck);
+		game.getController().hideInfo();
 	}
 	
 	public Card playCard(Card card)
@@ -52,8 +53,7 @@ public class Player
 	
 	public ArrayList<Card> getValidCards(Card lastCard, Color wishColor, boolean challenge)
 	{	
-		ArrayList<Card> validCards = new ArrayList<Card>();
-		
+		ArrayList<Card> validCards = new ArrayList<Card>();		
 		if(challenge)
 		{
 			for(Card currentCard : deck)
@@ -64,6 +64,13 @@ public class Player
 					{
 						validCards.add(currentCard);
 					}
+				}	
+				else if(wishColor.equals(Color.ALL))
+				{										
+					if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
+					{
+						validCards.add(currentCard);
+					}						
 				}
 				else
 				{
@@ -81,6 +88,16 @@ public class Player
 				for(Card currentCard : deck)
 				{								
 					if(currentCard.getColor().equals(lastCard.getColor()) || currentCard.getType().equals(lastCard.getType()) || currentCard.getType().equals(CardType.WILD) || currentCard.getType().equals(CardType.DRAW_FOUR))
+					{
+						validCards.add(currentCard);
+					}						
+				}
+			}
+			else if(wishColor.equals(Color.ALL))
+			{
+				for(Card currentCard : deck)
+				{								
+					if(!currentCard.getType().equals(CardType.WILD) && !currentCard.getType().equals(CardType.DRAW_FOUR))
 					{
 						validCards.add(currentCard);
 					}						
@@ -124,11 +141,9 @@ public class Player
 		if(validDeck.size() == 0)
 		{
 			if(challenge)
-			{
-				//TODO notification
-				drawCards(game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck()));	
-				System.out.println("You can't challenge --> please draw " + game.getChallengeCounter() + " cards");
-				game.draw();
+			{					
+				game.setShowingInfo(true);
+				game.getController().showInfo("Du kannst nicht kontern. Ziehe " + game.getChallengeCounter() + " Karten.", game.getChallengeCounter());
 			}
 			else
 			{			
@@ -137,8 +152,7 @@ public class Player
 		}
 		else
 		{
-			System.out.println("choose");
-			//playerInput (draw or turnCard)		
+			System.out.println("choose");			
 		}	
 	}
 }
