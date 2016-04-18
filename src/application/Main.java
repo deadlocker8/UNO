@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
@@ -17,7 +18,7 @@ public class Main extends Application
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("MainGUI.fxml"));
 			Parent root = (Parent)loader.load();
 
-			Scene scene = new Scene(root, 800, 650);
+			Scene scene = new Scene(root, 800, 650, false, SceneAntialiasing.BALANCED);
 
 			stage.setResizable(true);
 			stage.setTitle("UNO");
@@ -25,7 +26,7 @@ public class Main extends Application
 			
 			Controller controller = (Controller)loader.getController();
 			controller.setStage(stage);			
-			controller.init();			
+			controller.init();				
 			
 			//TODO set minWidth and Height
 			stage.getIcons().add(new Image("images/icon.png"));

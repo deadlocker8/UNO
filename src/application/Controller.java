@@ -70,10 +70,10 @@ public class Controller
 	private final ResourceBundle bundle = ResourceBundle.getBundle("application/", Locale.GERMANY);
 
 	private final double CARD_HEIGHT = 90.0;
-	private final double CARD_WIDTH = 57.0;
+	private final double CARD_WIDTH = 57.0;	
 	
 	private final double CARD_SPACING_LARGE = 14.0;
-	private final double CARD_SPACING_MEDIUM = - 3.0;
+	private final double CARD_SPACING_MEDIUM = 0.0;
 	private final double CARD_SPACING_SMALL = - 25.0;
 	private final double CARD_SPACING_ULTRA_SMALL = - 35.0;	
 
@@ -306,6 +306,7 @@ public class Controller
 		ImageView imageView = new ImageView(new Image("images/" + card.getType() + "-" + card.getColor() + ".png"));
 		imageView.setFitHeight(CARD_HEIGHT);
 		imageView.setFitWidth(CARD_WIDTH);
+		imageView.setSmooth(true);
 
 		if(!valid)
 		{
@@ -542,21 +543,21 @@ public class Controller
 				{
 					if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
 					{
-						return (PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+						return PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)) - CARD_SPACING_ULTRA_SMALL;
 					}
 					else
 					{
-						return (PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_SMALL)));
+						return PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_SMALL)) - CARD_SPACING_SMALL;
 					}
 				}
 				else
 				{
-					return (PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+					return PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_MEDIUM)) - CARD_SPACING_MEDIUM;
 				}
 			}
 			else
 			{
-				return (PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_LARGE)));
+				return PLAYER_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_LARGE)) - CARD_SPACING_LARGE;
 			}	
 		}
 		//AI 1 (Above Player)
@@ -570,21 +571,21 @@ public class Controller
 				{
 					if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
 					{
-						return (AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+						return AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)) - CARD_SPACING_ULTRA_SMALL;
 					}
 					else
 					{
-						return (AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_SMALL)));
+						return AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_SMALL)) - CARD_SPACING_SMALL;
 					}
 				}
 				else
 				{
-					return (AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+					return AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_MEDIUM)) - CARD_SPACING_MEDIUM;
 				}
 			}
 			else
 			{
-				return (AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_LARGE)));
+				return AI_1_STARTING_POINT.getX() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_LARGE)) - CARD_SPACING_LARGE;
 			}	
 		}		
 	}
@@ -600,21 +601,21 @@ public class Controller
 			{
 				if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxHeight)
 				{
-					return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL));
+					return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)) - CARD_SPACING_ULTRA_SMALL;
 				}
 				else
 				{
-					return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_SMALL));
+					return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_SMALL)) - CARD_SPACING_SMALL;
 				}
 			}
 			else
 			{
-				return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_MEDIUM));
+				return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_MEDIUM)) - CARD_SPACING_MEDIUM;
 			}
 		}
 		else
 		{
-			return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_LARGE));
+			return AI_2_STARTING_POINT.getY() + ((deckSize + 1) * (CARD_WIDTH + CARD_SPACING_LARGE)) - CARD_SPACING_LARGE;
 		}			
 	}
 	
@@ -708,35 +709,42 @@ public class Controller
 
 		int counter = 1;
 
-		for(Card currentCard : deck)
-		{
-			ImageView current = createCard(currentCard, true);
+		for(int i = 0; i < deck.size(); i++)
+		{			
+			ImageView current = createCard(deck.get(i), true);
 
 			current.setId("player");
-			mainPane.getChildren().add(current);
-			
-			double maxWidth = stage.getScene().getWidth() - (PLAYER_STARTING_POINT.getX() * 2) - CARD_WIDTH;
-			if((deck.size() * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
+			mainPane.getChildren().add(current);			
+
+			if(i == 0)
 			{
-				if((deck.size() * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
+				current.setX(AI_1_STARTING_POINT.getX() + CARD_WIDTH);
+			}
+			else
+			{	
+				double maxWidth = stage.getScene().getWidth() - (PLAYER_STARTING_POINT.getX() * 2) - CARD_WIDTH;
+				if((deck.size() * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
 				{
-					if((deck.size() * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
+					if((deck.size() * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
 					{
-						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+						if((deck.size() * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
+						{
+							current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)) - CARD_SPACING_ULTRA_SMALL);
+						}
+						else
+						{
+							current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)) - CARD_SPACING_SMALL);
+						}
 					}
 					else
 					{
-						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
+						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)) - CARD_SPACING_MEDIUM);
 					}
 				}
 				else
 				{
-					current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+					current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)) - CARD_SPACING_LARGE);
 				}
-			}
-			else
-			{
-				current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
 			}
 
 			current.setY(PLAYER_STARTING_POINT.getY());
@@ -751,8 +759,9 @@ public class Controller
 
 		int counter = 1;
 
-		for(Card currentCard : deck)
-		{
+		for(int i = 0; i < deck.size(); i++)
+		{			
+			Card currentCard = deck.get(i);
 			ImageView current;
 
 			if(validDeck.contains(currentCard))
@@ -770,29 +779,35 @@ public class Controller
 
 			mainPane.getChildren().add(current);
 
-			double maxWidth = stage.getScene().getWidth() - (PLAYER_STARTING_POINT.getX() * 2) - CARD_WIDTH;
-
-			if((deck.size() * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
+			if(i == 0)
 			{
-				if((deck.size() * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
+				current.setX(AI_1_STARTING_POINT.getX() + CARD_WIDTH);
+			}
+			else
+			{	
+				double maxWidth = stage.getScene().getWidth() - (PLAYER_STARTING_POINT.getX() * 2) - CARD_WIDTH;
+				if((deck.size() * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
 				{
-					if((deck.size() * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
+					if((deck.size() * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
 					{
-						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+						if((deck.size() * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
+						{
+							current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)) - CARD_SPACING_ULTRA_SMALL);
+						}
+						else
+						{
+							current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)) - CARD_SPACING_SMALL);
+						}
 					}
 					else
 					{
-						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
+						current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)) - CARD_SPACING_MEDIUM);
 					}
 				}
 				else
 				{
-					current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+					current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)) - CARD_SPACING_LARGE);
 				}
-			}
-			else
-			{
-				current.setX(PLAYER_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
 			}
 			
 			counter++;
@@ -812,7 +827,6 @@ public class Controller
 		}
 	}
 
-	@SuppressWarnings("unused")
 	public void setAIDeck(AI ai)
 	{
 		clearAIDeck(ai);
@@ -821,7 +835,7 @@ public class Controller
 
 		int counter = 1;
 		
-		for(Card currentCard : deck)
+		for(int i = 0; i < deck.size(); i++)
 		{
 			ImageView current = createBackCard();
 
@@ -831,34 +845,41 @@ public class Controller
 			
 			double maxWidth;
 			double maxHeight;
-			int deckSize;
+			int deckSize;			
 			
 			switch(ai.getID())
 			{
 				case 1:	maxWidth = stage.getScene().getWidth() - ((AI_1_STARTING_POINT.getX() + 25.0) * 2) - CARD_WIDTH;
 						deckSize = ai.getDeckSize();
 
-						if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
+						if(i == 0)
 						{
-							if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
+							current.setX(AI_1_STARTING_POINT.getX() + CARD_WIDTH);
+						}
+						else
+						{					
+							if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxWidth)
 							{
-								if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
+								if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxWidth)
 								{
-									current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+									if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxWidth)
+									{
+										current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)) - CARD_SPACING_ULTRA_SMALL);
+									}
+									else
+									{
+										current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)) - CARD_SPACING_SMALL);
+									}
 								}
 								else
 								{
-									current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
+									current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)) - CARD_SPACING_MEDIUM);
 								}
 							}
 							else
 							{
-								current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+								current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)) - CARD_SPACING_LARGE);
 							}
-						}
-						else
-						{
-							current.setX(AI_1_STARTING_POINT.getX() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
 						}
 		
 						current.setY(AI_1_STARTING_POINT.getY());
@@ -867,29 +888,36 @@ public class Controller
 				case 2:	maxHeight = stage.getScene().getHeight() - ((AI_2_STARTING_POINT.getY() + 50.0) * 2) - CARD_WIDTH;
 						deckSize = ai.getDeckSize();
 						
-						current.setRotate(90.0);
-		
-						if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxHeight)
+						current.setRotate(-90.0);						
+						
+						if(i == 0)
 						{
-							if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxHeight)
+							current.setY(AI_2_STARTING_POINT.getY() + CARD_WIDTH);							
+						}
+						else
+						{						
+							if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxHeight)
 							{
-								if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxHeight)
+								if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxHeight)
 								{
-									current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+									if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxHeight)
+									{
+										current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)) - CARD_SPACING_ULTRA_SMALL);
+									}
+									else
+									{
+										current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)) - CARD_SPACING_SMALL);
+									}
 								}
 								else
 								{
-									current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
+									current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)) - CARD_SPACING_MEDIUM);
 								}
 							}
 							else
 							{
-								current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+								current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)) - CARD_SPACING_LARGE);
 							}
-						}
-						else
-						{
-							current.setY(AI_2_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
 						}
 		
 						current.setX(AI_2_STARTING_POINT.getX());
@@ -900,27 +928,34 @@ public class Controller
 						
 						current.setRotate(90.0);
 		
-						if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxHeight)
+						if(i == 0)
 						{
-							if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxHeight)
+							current.setY(AI_3_STARTING_POINT.getY() + CARD_WIDTH);
+						}
+						else
+						{							
+							if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxHeight)
 							{
-								if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxHeight)
+								if((deckSize * (CARD_WIDTH + CARD_SPACING_MEDIUM)) > maxHeight)
 								{
-									current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)));
+									if((deckSize * (CARD_WIDTH + CARD_SPACING_SMALL)) > maxHeight)
+									{
+										current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_ULTRA_SMALL)) - CARD_SPACING_ULTRA_SMALL);
+									}
+									else
+									{
+										current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)) - CARD_SPACING_SMALL);
+									}
 								}
 								else
 								{
-									current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_SMALL)));
+									current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)) - CARD_SPACING_MEDIUM);
 								}
 							}
 							else
 							{
-								current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_MEDIUM)));
+								current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)) - CARD_SPACING_LARGE);
 							}
-						}
-						else
-						{
-							current.setY(AI_3_STARTING_POINT.getY() + (counter * (CARD_WIDTH + CARD_SPACING_LARGE)));
 						}
 		
 						current.setX(AI_3_STARTING_POINT.getX());
@@ -942,6 +977,8 @@ public class Controller
 		}
 	}	
 
+	//TODO reverse is not working correctly
+	
 	public void about()
 	{
 		Alert alert = new Alert(AlertType.INFORMATION);
