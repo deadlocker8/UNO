@@ -22,6 +22,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -59,11 +62,16 @@ public class Controller
 	@FXML private Label labelAI2Name;
 	@FXML private Label labelAI3Name;
 	@FXML private Button buttonStart;	
-	
+	@FXML private MenuBar menuBar;
+	@FXML private Menu menu1;
+	@FXML private MenuItem menuItem1;
+	@FXML private MenuItem menuItem2;
+	@FXML private MenuItem menuItem3;
 
 	public Game game;
 	public Color chosenWishColor;
 	public int drawCounter;
+	public Settings settings;
 
 	public Stage stage;
 	public Image icon = new Image("images/icon.png");
@@ -78,7 +86,7 @@ public class Controller
 	private final double CARD_SPACING_ULTRA_SMALL = - 35.0;	
 
 	private Point2D PLAYER_STARTING_POINT;
-	private final Point2D AI_1_STARTING_POINT = new Point2D(100.0, 50.0);	
+	private final Point2D AI_1_STARTING_POINT = new Point2D(100.0, 75.0);	
 	private Point2D AI_2_STARTING_POINT;
 	private Point2D AI_3_STARTING_POINT;
 
@@ -91,10 +99,38 @@ public class Controller
 	{
 		imageViewWishColor.setImage(new Image("/images/circle-all.png"));
 
-		PLAYER_STARTING_POINT = new Point2D(100.0, stage.getScene().getHeight() - 60.0 - CARD_HEIGHT);
-		AI_2_STARTING_POINT = new Point2D(stage.getScene().getWidth() - CARD_HEIGHT - 30, 50.0);
-		AI_3_STARTING_POINT = new Point2D(60.0, 50.0);
+		PLAYER_STARTING_POINT = new Point2D(100.0, stage.getScene().getHeight() - 50.0 - CARD_HEIGHT);
+		AI_2_STARTING_POINT = new Point2D(stage.getScene().getWidth() - CARD_HEIGHT - 30, 70.0);
+		AI_3_STARTING_POINT = new Point2D(60.0, 70.0);
+		
+		clearAll();
+		
+		settings = new Settings();
+		try
+		{
+			settings.load();
+		}
+		catch(Exception e)
+		{			
+			e.printStackTrace();
+		}		
+	}
 
+	public void setStage(Stage stage)
+	{
+		this.stage = stage;
+	}
+
+	public void startGame()
+	{
+		menuItem2.setDisable(true);
+		
+		hideWishColor();		
+		hideInfo();
+		hideLabelChallengeCounter();
+		
+		drawCounter = 0;	
+		
 		iconDeck.setImage(createEmptyBackCard());
 		iconDeck.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
 		{
@@ -111,35 +147,9 @@ public class Controller
 			}
 		});
 		
-		hideWishColor();
-		hideInfo();
-		hideLabelChallengeCounter();
-		setImageViewDirection(Direction.RIGHT);		
-		labelAI1Name.setVisible(false);
-		labelAI2Name.setVisible(false);
-		labelAI3Name.setVisible(false);
-		buttonStart.setVisible(false);
-
-		startGame();
-	}
-
-	public void setStage(Stage stage)
-	{
-		this.stage = stage;
-	}
-
-	public void startGame()
-	{
-		hideWishColor();		
-		hideInfo();
-		hideLabelChallengeCounter();
-		
-		drawCounter = 0;		
-
-		// DEBUG	
-		game = new Game(this, 2);
+		game = new Game(this, settings.getNumberOfAIs(), settings.getAiSpeed());
 		setLabelNames(game.getPlayer(), game.getAIs());
-		game.newGame(5);
+		game.newGame(settings.getNumberOfStartingCards());
 		
 		buttonStart.setOnAction(new EventHandler<ActionEvent>()
 		{
@@ -265,8 +275,17 @@ public class Controller
 		labelChallengeCounter.setVisible(true);
 	}
 	
+	public void hideImageViewDirection()
+	{
+		imageViewDirection.setVisible(false);
+		labelDirection.setVisible(false);
+	}
+	
 	public void setImageViewDirection(Direction direction)
 	{
+		imageViewDirection.setVisible(true);
+		labelDirection.setVisible(true);
+		
 		if(direction.equals(Direction.RIGHT))
 		{
 			imageViewDirection.setImage(new Image("/images/DIRECTION_RIGHT.png"));
@@ -979,7 +998,47 @@ public class Controller
 		}
 	}	
 
-	//TODO reverse is not working correctly
+	public void openSettings()
+	{
+		try
+		{
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/application/Settings.fxml"));
+
+			Parent root = (Parent)fxmlLoader.load();
+			Stage newStage = new Stage();
+			newStage.setScene(new Scene(root, 600, 400));
+			newStage.setTitle("Einstellungen");
+			newStage.initOwner(stage);
+
+			newStage.getIcons().add(icon);			
+			SettingsController newController = fxmlLoader.getController();
+			newController.init(newStage, this);
+
+			newStage.initModality(Modality.APPLICATION_MODAL);
+			newStage.setResizable(false);
+			newStage.showAndWait();
+
+		}
+		catch(IOException e1)
+		{
+			e1.printStackTrace();
+		}
+	}	
+	
+	public void clearAll()
+	{
+		menuItem2.setDisable(false);
+		hideWishColor();
+		hideInfo();
+		hideLabelChallengeCounter();
+		hideImageViewDirection();
+		labelAI1Name.setVisible(false);
+		labelAI2Name.setVisible(false);
+		labelAI3Name.setVisible(false);
+		buttonStart.setVisible(false);	
+		iconDeck.setImage(null);
+		iconLastCard.setImage(null);
+	}
 	
 	public void about()
 	{
@@ -990,5 +1049,5 @@ public class Controller
 		Stage dialogStage = (Stage)alert.getDialogPane().getScene().getWindow();
 		dialogStage.getIcons().add(icon);
 		alert.showAndWait();
-	}
+	}	
 }

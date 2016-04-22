@@ -27,10 +27,12 @@ public class Game
 	private int counter;
 	private boolean running;
 	private boolean showingInfo;
+	private int aiSpeed;
 	
-	public Game(Controller controller, int numberOfAIs)
+	public Game(Controller controller, int numberOfAIs, int aiSpeed)
 	{
 		this.controller = controller;
+		this.aiSpeed = aiSpeed;
 		deck = new Deck();
 		deadDeck = new DeadDeck();
 		player = new Player("Spieler", this);
@@ -182,7 +184,18 @@ public class Game
 				
 				try
 				{
-					Thread.sleep(500);
+					switch(aiSpeed)
+					{
+						case 1:		Thread.sleep(500);
+									break;
+						case 2:		Thread.sleep(250);
+									break;
+						case 3:		Thread.sleep(50);
+									break;
+						case 4:		Thread.sleep(0);
+									break;
+						default: 	break;
+					}					
 				}
 				catch(InterruptedException e)
 				{
@@ -236,7 +249,7 @@ public class Game
 	private void end(String name)
 	{			
 		controller.clearAllDecks(ais);
-		
+		controller.clearAll();
 		System.err.println("Player " + name + " wins!");
 		
 		running = false;
@@ -267,8 +280,6 @@ public class Game
 			dialogStage.getIcons().add(controller.icon);
 			alert.show();
 		}	
-		
-		
 	}
 
 	public Deck getDeck()

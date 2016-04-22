@@ -3,6 +3,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -50,17 +53,17 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="labelAI2Name" alignment="CENTER" contentDisplay="CENTER" layoutX="661.0" layoutY="95.0" prefHeight="19.0" prefWidth="106.0" text="Computer 2" textAlignment="CENTER">
+      <Label fx:id="labelAI2Name" alignment="CENTER" contentDisplay="CENTER" layoutX="661.0" layoutY="107.0" prefHeight="19.0" prefWidth="106.0" text="Computer 2" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="13.0" />
          </font>
       </Label>
-      <Label fx:id="labelAI3Name" alignment="CENTER" contentDisplay="CENTER" layoutX="36.0" layoutY="95.0" prefHeight="19.0" prefWidth="106.0" text="Computer 3" textAlignment="CENTER">
+      <Label fx:id="labelAI3Name" alignment="CENTER" contentDisplay="CENTER" layoutX="36.0" layoutY="107.0" prefHeight="19.0" prefWidth="106.0" text="Computer 3" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="13.0" />
          </font>
       </Label>
-      <Label fx:id="labelAI1Name" alignment="CENTER" contentDisplay="CENTER" layoutX="340.0" layoutY="16.0" prefHeight="19.0" prefWidth="106.0" text="Computer 1" textAlignment="CENTER">
+      <Label fx:id="labelAI1Name" alignment="CENTER" contentDisplay="CENTER" layoutX="340.0" layoutY="38.0" prefHeight="19.0" prefWidth="106.0" text="Computer 1" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="13.0" />
          </font>
@@ -70,5 +73,16 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
+      <MenuBar fx:id="menuBar" prefHeight="25.0" prefWidth="304.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <menus>
+          <Menu fx:id="menu1" mnemonicParsing="false" text="Menü">
+            <items>
+              <MenuItem fx:id="menuItem1" mnemonicParsing="false" onAction="#startGame" text="Neues Spiel" />
+                  <MenuItem fx:id="menuItem2" mnemonicParsing="false" onAction="#openSettings" text="Einstellungen" />
+              <MenuItem fx:id="menuItem3" mnemonicParsing="false" onAction="#about" text="Über" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
    </children>
 </AnchorPane>
