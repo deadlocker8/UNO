@@ -79,6 +79,7 @@
           <Menu fx:id="menu1" mnemonicParsing="false" text="Menü">
             <items>
                   <MenuItem fx:id="menuItem2" mnemonicParsing="false" onAction="#openSettings" text="Einstellungen" />
+                  <MenuItem fx:id="menuItem1" mnemonicParsing="false" onAction="#buttonAchievements" text="Achievements" />
               <MenuItem fx:id="menuItem3" mnemonicParsing="false" onAction="#about" text="Über" />
             </items>
           </Menu>
@@ -89,7 +90,7 @@
             <Image url="@../images/icon.png" />
          </image>
       </ImageView>
-      <Label fx:id="labelLogo" layoutX="274.0" layoutY="385.0" text="Welcome to UNO!">
+      <Label fx:id="labelLogo" layoutX="244.0" layoutY="385.0" text="Willkommen bei UNO!">
          <font>
             <Font name="System Bold" size="28.0" />
          </font>

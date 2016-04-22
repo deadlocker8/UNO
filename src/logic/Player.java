@@ -6,14 +6,14 @@ public class Player
 {
 	private String name;
 	private ArrayList<Card> deck;
-	private int wins;	
+	private int winsInARow;	
 	private Game game;
 	
 	public Player(String name, Game game)
 	{	
 		this.name = name;
 		deck = new ArrayList<Card>();
-		wins = 0;
+		winsInARow = 0;
 		this.game = game;
 	}
 	
@@ -24,17 +24,34 @@ public class Player
 	
 	public void win()
 	{
-		wins++;
+		winsInARow++;
 	}
 	
-	public int getWins()
+	public void resetWinsInARow()
 	{
-		return wins;
+		winsInARow = 0;
+	}
+	
+	public int getwinsInARow()
+	{
+		return winsInARow;
 	}
 	
 	public void drawCard(Card card)
 	{
 		deck.add(card);
+		if(getNumberOfDrawFourCards() >= 2)
+		{
+			try
+			{							
+				game.getController().handler.unlockAchievement(8);						
+				game.getController().handler.saveAndLoad();
+			}
+			catch(Exception e)
+			{							
+			} 
+		}		
+		
 		game.getController().setPlayerDeck(deck);
 	}
 	
@@ -168,5 +185,18 @@ public class Player
 		{
 			System.out.println("choose");			
 		}	
+	}
+	
+	private int getNumberOfDrawFourCards()
+	{
+		int counter = 0;
+		for(Card card : deck)
+		{
+			if(card.getType().equals(CardType.DRAW_FOUR))
+			{
+				counter++;
+			}
+		}
+		return counter;
 	}
 }

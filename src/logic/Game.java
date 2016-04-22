@@ -6,6 +6,7 @@ import java.util.Random;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
+import achievements.Achievement.Status;
 import application.Controller;
 
 public class Game
@@ -75,9 +76,9 @@ public class Game
 		showingInfo = false;
 
 		player.initialize();
-
+	
 		player.drawCards(deck.drawCards(numberOfStartingCards, deadDeck));
-
+		
 		for(AI currentAI : ais)
 		{
 			currentAI.initialize();
@@ -256,6 +257,8 @@ public class Game
 		
 		if(currentPlayer == 1)
 		{		
+			player.win();
+			
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Sieg!");
 			alert.setHeaderText("");
@@ -266,13 +269,45 @@ public class Game
 			alert.show();
 			
 			controller.showNeutralUI();
+			
+			try
+			{							
+				controller.handler.unlockAchievement(0);				
+				controller.handler.incrementAchievement(1, 1);	
+				controller.handler.incrementAchievement(2, 1);	
+				controller.handler.incrementAchievement(3, 1);
+				controller.handler.incrementAchievement(4, 1);
+				controller.handler.checkAllIncrementalAchievements();			
+				controller.handler.saveAndLoad();
+			}
+			catch(Exception e)
+			{							
+			}
 		}
 		else
-		{			
+		{		
+			player.resetWinsInARow();
+			
+			try
+			{					
+				if(controller.handler.getAchievements().get(3).getStatus().equals(Status.LOCKED))
+				{
+					controller.handler.resetAchievement(3);
+				}
+				if(controller.handler.getAchievements().get(4).getStatus().equals(Status.LOCKED))
+				{
+					controller.handler.resetAchievement(4);
+				}	
+				controller.handler.saveAndLoad();
+			}
+			catch(Exception e)
+			{							
+			}
+			
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Niederlage!");
 			alert.setHeaderText("");
-			alert.setContentText(ais.get(currentPlayer - 2).getName() + " hat gewonnen.");
+			alert.setContentText(name + " hat gewonnen.");
 			alert.initOwner(controller.stage);
 			Stage dialogStage = (Stage)alert.getDialogPane().getScene().getWindow();
 			dialogStage.getIcons().add(controller.icon);

@@ -7,6 +7,9 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import achievements.Achievement;
+import achievements.AchievementHandler;
+import achievements.Achievement.Status;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -64,6 +67,7 @@ public class Controller
 	@FXML private Button buttonStart;	
 	@FXML private MenuBar menuBar;
 	@FXML private Menu menu1;	
+	@FXML private MenuItem menuItem1;
 	@FXML private MenuItem menuItem2;
 	@FXML private MenuItem menuItem3;
 	@FXML private ImageView imageViewLogo;
@@ -75,6 +79,8 @@ public class Controller
 	public Color chosenWishColor;
 	public int drawCounter;
 	public Settings settings;
+	public AchievementHandler handler;
+	private int secretCounter;
 
 	public Stage stage;
 	public Image icon = new Image("images/icon.png");
@@ -117,7 +123,52 @@ public class Controller
 		catch(Exception e)
 		{			
 			e.printStackTrace();
-		}		
+		}	
+		
+		handler = new AchievementHandler(stage);
+		handler.setPath(System.getenv("APPDATA") + "/Deadlocker/UNO/achievements.save");
+		try
+		{
+			handler.loadAchievements();
+		}
+		catch(Exception e)
+		{
+			//falls die Datei nicht existiert, wird versucht die neu zu erzeugen
+			createAchievements();	
+			try
+			{
+				handler.loadAchievements();
+			}
+			catch(Exception ex)
+			{				
+			}
+		}
+		
+		iconLastCard.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
+		{
+			@Override
+			public void handle(MouseEvent event)
+			{
+				if(secretCounter < 5)
+				{
+					secretCounter++;
+					if(secretCounter == 5)
+					{
+						try
+						{							
+							handler.unlockAchievement(9);
+							handler.saveAndLoad();
+						}
+						catch(Exception e)
+						{							
+						}
+					}
+				}
+				else
+				{					
+				}
+			}			
+		});
 	}
 
 	public void setStage(Stage stage)
@@ -272,6 +323,18 @@ public class Controller
 			@Override
 			public void handle(ActionEvent event)
 			{
+				if(game.getChallengeCounter() > 10 )
+				{
+					try
+					{							
+						handler.unlockAchievement(5);									
+						handler.saveAndLoad();
+					}
+					catch(Exception e)
+					{							
+					}
+					
+				}
 				moveCardFromDeckToPlayer(game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck()));				
 			}
 		});
@@ -452,6 +515,31 @@ public class Controller
 					hideWishColor();
 				}
 				Card playedCard	= game.getPlayer().playCard(card);
+				
+				if(playedCard.getType().equals(CardType.DRAW_FOUR) && game.getDeadDeck().getCards().get(game.getDeadDeck().getCards().size()-1).getType().equals(CardType.DRAW_FOUR) && game.getChallengeCounter() > 0)
+				{
+					try
+					{							
+						handler.unlockAchievement(6);						
+						handler.saveAndLoad();
+					}
+					catch(Exception e)
+					{							
+					}
+				}
+				
+				if(playedCard.getType().equals(CardType.WILD))
+				{
+					try
+					{							
+						handler.unlockAchievement(7);						
+						handler.saveAndLoad();
+					}
+					catch(Exception e)
+					{							
+					}
+				}		
+				
 				setPlayerDeck(game.getPlayer().getDeck());
 				game.playCard(playedCard, newWishColor);
 			}
@@ -1055,6 +1143,80 @@ public class Controller
 		buttonStart.setVisible(false);	
 		iconDeck.setImage(null);
 		iconLastCard.setImage(null);	
+	}
+	
+	private void createAchievements()
+	{		
+		AchievementHandler handler = new AchievementHandler(stage);
+		handler.setPath(System.getenv("APPDATA") + "/Deadlocker/UNO/achievements.save");
+		handler.addAchievement(new Achievement("Anfänger", "Gewinne dein erstes Spiel", null, null, Status.LOCKED));
+		handler.addAchievement(new Achievement("Fortgeschrittener", "Gewinne insgesamt 10 Spiele", null, null, Status.LOCKED, 0, 10, 0));
+		handler.addAchievement(new Achievement("Experte", "Gewinne insgesamt 50 Spiele", null, null, Status.LOCKED, 0, 50, 0));
+		
+		handler.addAchievement(new Achievement("Glückssträhne", "Gewinne hintereinander 3 Spiele", null, null, Status.LOCKED, 0, 3, 0));
+		handler.addAchievement(new Achievement("Läuft bei dir!", "Gewinne hintereinander 5 Spiele", null, null, Status.LOCKED, 0, 5, 0));
+		
+		handler.addAchievement(new Achievement("Arme Sau", "Du musst mehr als 10 Karten ziehen", null, null, Status.LOCKED));
+		handler.addAchievement(new Achievement("Gegenangriff", "Kontere eine +4", null, null, Status.LOCKED));
+		handler.addAchievement(new Achievement("Wunschkonzert", "Wünsch dir eine Farbe", null, null, Status.LOCKED));
+		handler.addAchievement(new Achievement("Cheatest du?", "Besitze zwei +4 Karten gleichzeitig", null, null, Status.LOCKED));		
+		
+		handler.addAchievement(new Achievement("Unmöglich", "Klicke 5 mal auf den Ablagestapel", null, null, Status.HIDDEN));		
+
+		try
+		{
+			handler.saveAchievements();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	@FXML
+	private void buttonAchievements()
+	{ 	
+		Stage newStage = new Stage();
+		newStage.setMinHeight(250);
+		newStage.setMinWidth(250);
+
+		AnchorPane root = new AnchorPane();
+
+		try
+		{
+			handler.loadAchievements();
+		}
+		catch(Exception e)
+		{
+		}
+
+		AnchorPane list = handler.getAchievementList();
+		AnchorPane summary = handler.getSummary();
+
+		root.getChildren().add(summary);
+		root.getChildren().add(list);
+		
+		newStage.setResizable(false);
+
+		AnchorPane.setTopAnchor(summary, 50.0);
+		AnchorPane.setLeftAnchor(summary, 25.0);
+		AnchorPane.setRightAnchor(summary, 50.0);
+
+		AnchorPane.setTopAnchor(list, 180.0);
+		AnchorPane.setLeftAnchor(list, 25.0);
+		AnchorPane.setRightAnchor(list, 25.0);
+		AnchorPane.setBottomAnchor(list, 25.0);
+
+		root.setStyle("-fx-background-color: #3F3F3F;");
+
+		Scene scene = new Scene(root, 800, 600);
+		newStage.setScene(scene);
+
+		newStage.setTitle("Achievements");
+		newStage.initModality(Modality.APPLICATION_MODAL);
+		newStage.getIcons().add(new Image("/images/icon.png"));
+		newStage.setResizable(true);
+		newStage.show();
 	}
 	
 	public void about()
