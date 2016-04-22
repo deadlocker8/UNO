@@ -58,25 +58,39 @@ public class Player
 		{
 			for(Card currentCard : deck)
 			{	
-				if(wishColor == null)
+				if(lastCard.getType().equals(CardType.DRAW_TWO))
 				{
-					if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
+					if(game.getController().settings.isAllowChallengePlusTwo())
 					{
-						validCards.add(currentCard);
+						if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
+						{
+							validCards.add(currentCard);
+						}
 					}
-				}	
-				else if(wishColor.equals(Color.ALL))
-				{										
-					if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
-					{
-						validCards.add(currentCard);
-					}						
 				}
-				else
+				else // lastCard == +4
 				{
-					if(currentCard.getColor().equals(wishColor) && currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
+					if(game.getController().settings.isAllowChallengePlusFourWithFour())
 					{
-						validCards.add(currentCard);
+						if(currentCard.getType().equals(CardType.DRAW_FOUR))
+						{
+							validCards.add(currentCard);
+						}						
+					}
+					
+					if(game.getController().settings.isAllowChallengePlusFourWithTwo())
+					{
+						if(currentCard.getType().equals(CardType.DRAW_TWO))
+						{
+							if(wishColor == Color.ALL)
+							{
+								validCards.add(currentCard);
+							}
+							else if(currentCard.getColor().equals(wishColor))
+							{
+								validCards.add(currentCard);
+							}
+						}					
 					}
 				}
 			}

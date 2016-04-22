@@ -249,15 +249,13 @@ public class Game
 	private void end(String name)
 	{			
 		controller.clearAllDecks(ais);
-		controller.clearAll();
+		controller.clearAll();		
 		System.err.println("Player " + name + " wins!");
 		
 		running = false;
 		
 		if(currentPlayer == 1)
-		{
-			controller.setLabelCurrentPlayer(player.getName() + " gewinnt!");
-			
+		{		
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Sieg!");
 			alert.setHeaderText("");
@@ -266,11 +264,11 @@ public class Game
 			Stage dialogStage = (Stage)alert.getDialogPane().getScene().getWindow();
 			dialogStage.getIcons().add(controller.icon);
 			alert.show();
+			
+			controller.showNeutralUI();
 		}
 		else
-		{
-			controller.setLabelCurrentPlayer(ais.get(currentPlayer - 2).getName() + " gewinnt!");
-			
+		{			
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Niederlage!");
 			alert.setHeaderText("");
@@ -279,6 +277,8 @@ public class Game
 			Stage dialogStage = (Stage)alert.getDialogPane().getScene().getWindow();
 			dialogStage.getIcons().add(controller.icon);
 			alert.show();
+			
+			controller.showNeutralUI();
 		}	
 	}
 

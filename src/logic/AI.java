@@ -58,31 +58,45 @@ public class AI
 	}
 
 	public ArrayList<Card> getValidCards(Card lastCard, Color wishColor, boolean challenge)
-	{
-		ArrayList<Card> validCards = new ArrayList<Card>();
+	{	
+		ArrayList<Card> validCards = new ArrayList<Card>();		
 		if(challenge)
 		{
 			for(Card currentCard : deck)
-			{
-				if(wishColor == null)
+			{	
+				if(lastCard.getType().equals(CardType.DRAW_TWO))
 				{
-					if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
+					if(game.getController().settings.isAllowChallengePlusTwo())
 					{
-						validCards.add(currentCard);
+						if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
+						{
+							validCards.add(currentCard);
+						}
 					}
 				}
-				else if(wishColor.equals(Color.ALL))
+				else // lastCard == +4
 				{
-					if(currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
+					if(game.getController().settings.isAllowChallengePlusFourWithFour())
 					{
-						validCards.add(currentCard);
+						if(currentCard.getType().equals(CardType.DRAW_FOUR))
+						{
+							validCards.add(currentCard);
+						}						
 					}
-				}
-				else
-				{
-					if(currentCard.getColor().equals(wishColor) && currentCard.getType().equals(CardType.DRAW_TWO) || currentCard.getType().equals(CardType.DRAW_FOUR))
+					
+					if(game.getController().settings.isAllowChallengePlusFourWithTwo())
 					{
-						validCards.add(currentCard);
+						if(currentCard.getType().equals(CardType.DRAW_TWO))
+						{
+							if(wishColor == Color.ALL)
+							{
+								validCards.add(currentCard);
+							}
+							else if(currentCard.getColor().equals(wishColor))
+							{
+								validCards.add(currentCard);
+							}
+						}					
 					}
 				}
 			}
@@ -90,24 +104,23 @@ public class AI
 		else
 		{
 			if(wishColor == null)
-			{
+			{	
 				for(Card currentCard : deck)
-				{
-					if(currentCard.getColor().equals(lastCard.getColor()) || currentCard.getType().equals(lastCard.getType()) || currentCard.getType().equals(CardType.WILD)
-							|| currentCard.getType().equals(CardType.DRAW_FOUR))
+				{								
+					if(currentCard.getColor().equals(lastCard.getColor()) || currentCard.getType().equals(lastCard.getType()) || currentCard.getType().equals(CardType.WILD) || currentCard.getType().equals(CardType.DRAW_FOUR))
 					{
 						validCards.add(currentCard);
-					}
+					}						
 				}
 			}
 			else if(wishColor.equals(Color.ALL))
 			{
 				for(Card currentCard : deck)
-				{
-					if( ! currentCard.getType().equals(CardType.WILD) && ! currentCard.getType().equals(CardType.DRAW_FOUR))
+				{								
+					if(!currentCard.getType().equals(CardType.WILD) && !currentCard.getType().equals(CardType.DRAW_FOUR))
 					{
 						validCards.add(currentCard);
-					}
+					}						
 				}
 			}
 			else
@@ -117,14 +130,13 @@ public class AI
 					if(currentCard.getColor().equals(wishColor))
 					{
 						validCards.add(currentCard);
-					}
+					}	
 				}
-			}
-		}
-
+			}		
+		}		
+	
 		return validCards;
 	}
-
 	public int getDeckSize()
 	{
 		return deck.size();

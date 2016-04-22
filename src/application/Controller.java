@@ -63,10 +63,13 @@ public class Controller
 	@FXML private Label labelAI3Name;
 	@FXML private Button buttonStart;	
 	@FXML private MenuBar menuBar;
-	@FXML private Menu menu1;
-	@FXML private MenuItem menuItem1;
+	@FXML private Menu menu1;	
 	@FXML private MenuItem menuItem2;
 	@FXML private MenuItem menuItem3;
+	@FXML private ImageView imageViewLogo;
+	@FXML private Label labelLogo;
+	@FXML private Button buttonNewGame;
+	
 
 	public Game game;
 	public Color chosenWishColor;
@@ -104,6 +107,7 @@ public class Controller
 		AI_3_STARTING_POINT = new Point2D(60.0, 70.0);
 		
 		clearAll();
+		showNeutralUI();
 		
 		settings = new Settings();
 		try
@@ -123,13 +127,11 @@ public class Controller
 
 	public void startGame()
 	{
+		clearAll();
 		menuItem2.setDisable(true);
 		
-		hideWishColor();		
-		hideInfo();
-		hideLabelChallengeCounter();
-		
-		drawCounter = 0;	
+		drawCounter = 0;
+		labelCurrentPlayer.setVisible(true);
 		
 		iconDeck.setImage(createEmptyBackCard());
 		iconDeck.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
@@ -163,6 +165,20 @@ public class Controller
 		buttonStart.setVisible(true);		
 	}
 	
+	public void showNeutralUI()
+	{
+		imageViewLogo.setVisible(true);
+		labelLogo.setVisible(true);
+		buttonNewGame.setVisible(true);
+	}
+	
+	public void hideNeutralUI()
+	{
+		imageViewLogo.setVisible(false);
+		labelLogo.setVisible(false);
+		buttonNewGame.setVisible(false);
+	}
+	
 	public void setLabelNames(Player player, ArrayList<AI> ais)
 	{	
 		labelAI2Name.setVisible(false);
@@ -184,8 +200,7 @@ public class Controller
 			labelAI3Name.setText(ais.get(0).getName());
 			labelAI3Name.setVisible(true);
 		}
-	}
-	
+	}	
 
 	public void showCircleWishColor(Color color)
 	{
@@ -613,7 +628,7 @@ public class Controller
 	
 	private double getPositionOfBottomCard(AI ai)
 	{			
-		double maxHeight = stage.getScene().getHeight() - ((AI_2_STARTING_POINT.getY() + 50.0) * 2) - CARD_WIDTH;
+		double maxHeight = stage.getScene().getHeight() - ((AI_2_STARTING_POINT.getY() + 40.0) * 2) - CARD_WIDTH;
 		int deckSize = ai.getDeckSize();					
 
 		if((deckSize * (CARD_WIDTH + CARD_SPACING_LARGE)) > maxHeight)
@@ -906,7 +921,7 @@ public class Controller
 						current.setY(AI_1_STARTING_POINT.getY());
 						break;
 						
-				case 2:	maxHeight = stage.getScene().getHeight() - ((AI_2_STARTING_POINT.getY() + 50.0) * 2) - CARD_WIDTH;
+				case 2:	maxHeight = stage.getScene().getHeight() - ((AI_2_STARTING_POINT.getY() + 40.0) * 2) - CARD_WIDTH;
 						deckSize = ai.getDeckSize();
 						
 						current.setRotate(-90.0);						
@@ -944,7 +959,7 @@ public class Controller
 						current.setX(AI_2_STARTING_POINT.getX());
 						break;
 						
-				case 3:	maxHeight = stage.getScene().getHeight() - ((AI_3_STARTING_POINT.getY() + 50.0) * 2) - CARD_WIDTH;
+				case 3:	maxHeight = stage.getScene().getHeight() - ((AI_3_STARTING_POINT.getY() + 40.0) * 2) - CARD_WIDTH;
 						deckSize = ai.getDeckSize();
 						
 						current.setRotate(90.0);
@@ -1027,9 +1042,11 @@ public class Controller
 	
 	public void clearAll()
 	{
+		hideNeutralUI();
 		menuItem2.setDisable(false);
 		hideWishColor();
 		hideInfo();
+		labelCurrentPlayer.setVisible(false);
 		hideLabelChallengeCounter();
 		hideImageViewDirection();
 		labelAI1Name.setVisible(false);
@@ -1037,7 +1054,7 @@ public class Controller
 		labelAI3Name.setVisible(false);
 		buttonStart.setVisible(false);	
 		iconDeck.setImage(null);
-		iconLastCard.setImage(null);
+		iconLastCard.setImage(null);	
 	}
 	
 	public void about()
