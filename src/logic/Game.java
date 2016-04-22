@@ -142,27 +142,27 @@ public class Game
 		
 		System.out.println("ROUND: " + counter / 4 + 1);
 		
+		if(lastCard.getType().equals(CardType.REVERSE) && !lastPlayerDraw)
+		{
+			if(direction.equals(Direction.RIGHT))
+			{
+				direction = Direction.LEFT;
+				controller.setImageViewDirection(Direction.LEFT);		
+
+			}
+			else
+			{
+				direction = Direction.RIGHT;
+				controller.setImageViewDirection(Direction.RIGHT);	
+			}				
+		}		
+		
 		determineNextPlayer();				
 		
 		System.out.println("Player " + currentPlayer + "'s turn");
 		
 		if(skipped || !lastCard.getType().equals(CardType.SKIP))
-		{
-			if(lastCard.getType().equals(CardType.REVERSE) && !lastPlayerDraw)
-			{
-				if(direction.equals(Direction.RIGHT))
-				{
-					direction = Direction.LEFT;
-					controller.setImageViewDirection(Direction.LEFT);		
-
-				}
-				else
-				{
-					direction = Direction.RIGHT;
-					controller.setImageViewDirection(Direction.RIGHT);	
-				}				
-			}		
-			
+		{		
 			if(currentPlayer == 1)
 			{			
 				controller.setLabelCurrentPlayer(player.getName() + " ist am Zug");

@@ -137,7 +137,7 @@ public class Controller
 		drawCounter = 0;		
 
 		// DEBUG	
-		game = new Game(this, 3);
+		game = new Game(this, 2);
 		setLabelNames(game.getPlayer(), game.getAIs());
 		game.newGame(5);
 		
