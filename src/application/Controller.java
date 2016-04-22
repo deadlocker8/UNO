@@ -417,8 +417,9 @@ public class Controller
 				{
 					hideWishColor();
 				}
+				Card playedCard	= game.getPlayer().playCard(card);
 				setPlayerDeck(game.getPlayer().getDeck());
-				game.playCard(game.getPlayer().playCard(card), newWishColor);
+				game.playCard(playedCard, newWishColor);
 			}
 		});
 
@@ -468,8 +469,9 @@ public class Controller
 				{
 					hideWishColor();
 				}
+				Card playedCard = ai.playCard(card);
 				setAIDeck(ai);
-				game.playCard(ai.playCard(card), newWishColor);
+				game.playCard(playedCard, newWishColor);
 			}
 		});
 
