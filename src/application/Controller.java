@@ -81,6 +81,7 @@ public class Controller
 	public Settings settings;
 	public AchievementHandler handler;
 	private int secretCounter;
+	private boolean playerHasDrawn;
 
 	public Stage stage;
 	public Image icon = new Image("images/icon.png");
@@ -182,6 +183,7 @@ public class Controller
 		menuItem2.setDisable(true);
 		
 		drawCounter = 0;
+		playerHasDrawn = false;
 		labelCurrentPlayer.setVisible(true);
 		
 		iconDeck.setImage(createEmptyBackCard());
@@ -190,8 +192,9 @@ public class Controller
 			@Override
 			public void handle(MouseEvent event)
 			{
-				if(game.isRunning() && game.getCurrentPlayer() == 1 && !game.isShowingInfo())
+				if(game.isRunning() && game.getCurrentPlayer() == 1 && !game.isShowingInfo() && !playerHasDrawn)
 				{
+					playerHasDrawn = true;
 					Card drawedCard = game.getDeck().drawCard(game.getDeadDeck());
 					ArrayList<Card> allCards = new ArrayList<Card>();
 					allCards.add(drawedCard);				
@@ -637,6 +640,7 @@ public class Controller
 				game.getPlayer().drawCard(cards.get(drawCounter));
 				setPlayerDeck(game.getPlayer().getDeck());
 				drawCounter++;
+				playerHasDrawn = false;
 				
 				if(drawCounter < cards.size())
 				{				
