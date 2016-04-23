@@ -70,6 +70,7 @@ public class Controller
 	@FXML private MenuItem menuItem1;
 	@FXML private MenuItem menuItem2;
 	@FXML private MenuItem menuItem3;
+	@FXML private MenuItem menuItemNewGame;
 	@FXML private ImageView imageViewLogo;
 	@FXML private Label labelLogo;
 	@FXML private Button buttonNewGame;
@@ -179,12 +180,18 @@ public class Controller
 
 	public void startGame()
 	{
+		if(game != null)
+		{
+			game.stop();	
+		}
+		
 		clearAll();
 		menuItem2.setDisable(true);
 		
 		drawCounter = 0;
 		playerHasDrawn = false;
 		labelCurrentPlayer.setVisible(true);
+		labelCurrentPlayer.setText("");
 		
 		iconDeck.setImage(createEmptyBackCard());
 		iconDeck.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>()
@@ -605,58 +612,61 @@ public class Controller
 	
 	public void moveCardFromDeckToPlayer(ArrayList<Card> cards)
 	{
-		Point2D deckPosition = iconDeck.localToScene(Point2D.ZERO);
-		
-		ImageView view = createCard(cards.get(drawCounter), true);
-		view.setId("drawAnimation");
-		view.setX(deckPosition.getX());
-		view.setY(deckPosition.getY());
-		mainPane.getChildren().add(view);	
-		
-		TranslateTransition translateTransition = new TranslateTransition();
-		translateTransition.setDuration(Duration.millis(500));
-		translateTransition.setNode(view);
-		translateTransition.setCycleCount(1);
-		translateTransition.setAutoReverse(false);
-		translateTransition.setFromX(0);
-		translateTransition.setFromY(0);
-		translateTransition.setToX( - (view.getX() - getPositionOfRightCard(null)));
-		translateTransition.setToY( - (view.getY() - PLAYER_STARTING_POINT.getY()));
-		translateTransition.setOnFinished(new EventHandler<ActionEvent>()
-		{
-			@Override
-			public void handle(ActionEvent event)
+		if(game.isRunning())
+		{	
+			Point2D deckPosition = iconDeck.localToScene(Point2D.ZERO);
+			
+			ImageView view = createCard(cards.get(drawCounter), true);
+			view.setId("drawAnimation");
+			view.setX(deckPosition.getX());
+			view.setY(deckPosition.getY());
+			mainPane.getChildren().add(view);	
+			
+			TranslateTransition translateTransition = new TranslateTransition();
+			translateTransition.setDuration(Duration.millis(500));
+			translateTransition.setNode(view);
+			translateTransition.setCycleCount(1);
+			translateTransition.setAutoReverse(false);
+			translateTransition.setFromX(0);
+			translateTransition.setFromY(0);
+			translateTransition.setToX( - (view.getX() - getPositionOfRightCard(null)));
+			translateTransition.setToY( - (view.getY() - PLAYER_STARTING_POINT.getY()));
+			translateTransition.setOnFinished(new EventHandler<ActionEvent>()
 			{
-				ObservableList<Node> nodes = mainPane.getChildren();
-				Iterator<Node> iterator = nodes.iterator();
-				while(iterator.hasNext())
+				@Override
+				public void handle(ActionEvent event)
 				{
-					if(iterator.next().getId().equals("drawAnimation"))
+					ObservableList<Node> nodes = mainPane.getChildren();
+					Iterator<Node> iterator = nodes.iterator();
+					while(iterator.hasNext())
 					{
-						iterator.remove();
+						if(iterator.next().getId().equals("drawAnimation"))
+						{
+							iterator.remove();
+						}
 					}
+					
+					game.getPlayer().drawCard(cards.get(drawCounter));
+					setPlayerDeck(game.getPlayer().getDeck());
+					drawCounter++;
+					playerHasDrawn = false;
+					
+					if(drawCounter < cards.size())
+					{				
+						moveCardFromDeckToPlayer(cards);
+					}
+					else				
+					{
+						game.setShowingInfo(false);
+						hideInfo();
+						drawCounter = 0;
+						game.draw();
+					}						
 				}
-				
-				game.getPlayer().drawCard(cards.get(drawCounter));
-				setPlayerDeck(game.getPlayer().getDeck());
-				drawCounter++;
-				playerHasDrawn = false;
-				
-				if(drawCounter < cards.size())
-				{				
-					moveCardFromDeckToPlayer(cards);
-				}
-				else				
-				{
-					game.setShowingInfo(false);
-					hideInfo();
-					drawCounter = 0;
-					game.draw();
-				}						
-			}
-		});
-
-		translateTransition.play();
+			});
+	
+			translateTransition.play();
+		}
 	}
 	
 	private double getPositionOfRightCard(AI ai)
@@ -750,72 +760,75 @@ public class Controller
 	@SuppressWarnings("unused")
 	public void moveCardFromDeckToAI(AI ai, ArrayList<Card> cards)
 	{
-		Card card = game.getDeck().drawCard(game.getDeadDeck());
-		
-		Point2D deckPosition = iconDeck.localToScene(Point2D.ZERO);
-		
-		ImageView view = createBackCard();
-		view.setId("drawAnimation");
-		view.setX(deckPosition.getX());
-		view.setY(deckPosition.getY());
-		mainPane.getChildren().add(view);	
-		
-		TranslateTransition translateTransition = new TranslateTransition();
-		translateTransition.setDuration(Duration.millis(500));
-		translateTransition.setNode(view);
-		translateTransition.setCycleCount(1);
-		translateTransition.setAutoReverse(false);
-		translateTransition.setFromX(0);
-		translateTransition.setFromY(0);
-		
-		switch(ai.getID())
-		{
-			case 1:		translateTransition.setToX( - (view.getX() - getPositionOfRightCard(ai)));
-						translateTransition.setToY( - (view.getY() - AI_1_STARTING_POINT.getY()));
-						break;
-			case 2:		translateTransition.setToX( - (view.getX() - AI_2_STARTING_POINT.getX()));
-						translateTransition.setToY( - (view.getY() - getPositionOfBottomCard(ai)));
-						break;				
-			case 3:		translateTransition.setToX( - (view.getX() - AI_3_STARTING_POINT.getX()));
-						translateTransition.setToY( - (view.getY() - getPositionOfBottomCard(ai)));
-						break;				
-			default:	break;
-		}
-	
-		translateTransition.setOnFinished(new EventHandler<ActionEvent>()
-		{
-			@Override
-			public void handle(ActionEvent event)
+		if(game.isRunning())
+		{		
+			Card card = game.getDeck().drawCard(game.getDeadDeck());
+			
+			Point2D deckPosition = iconDeck.localToScene(Point2D.ZERO);
+			
+			ImageView view = createBackCard();
+			view.setId("drawAnimation");
+			view.setX(deckPosition.getX());
+			view.setY(deckPosition.getY());
+			mainPane.getChildren().add(view);	
+			
+			TranslateTransition translateTransition = new TranslateTransition();
+			translateTransition.setDuration(Duration.millis(500));
+			translateTransition.setNode(view);
+			translateTransition.setCycleCount(1);
+			translateTransition.setAutoReverse(false);
+			translateTransition.setFromX(0);
+			translateTransition.setFromY(0);
+			
+			switch(ai.getID())
 			{
-				ObservableList<Node> nodes = mainPane.getChildren();
-				Iterator<Node> iterator = nodes.iterator();
-				while(iterator.hasNext())
-				{
-					if(iterator.next().getId().equals("drawAnimation"))
-					{
-						iterator.remove();
-					}
-				}
-				
-				ai.drawCard(cards.get(drawCounter));
-				setAIDeck(ai);
-				drawCounter++;
-				
-				if(drawCounter < cards.size())
-				{				
-					moveCardFromDeckToAI(ai, cards);
-				}
-				else				
-				{
-					game.setShowingInfo(false);
-					hideInfo();
-					drawCounter = 0;
-					game.draw();
-				}						
+				case 1:		translateTransition.setToX( - (view.getX() - getPositionOfRightCard(ai)));
+							translateTransition.setToY( - (view.getY() - AI_1_STARTING_POINT.getY()));
+							break;
+				case 2:		translateTransition.setToX( - (view.getX() - AI_2_STARTING_POINT.getX()));
+							translateTransition.setToY( - (view.getY() - getPositionOfBottomCard(ai)));
+							break;				
+				case 3:		translateTransition.setToX( - (view.getX() - AI_3_STARTING_POINT.getX()));
+							translateTransition.setToY( - (view.getY() - getPositionOfBottomCard(ai)));
+							break;				
+				default:	break;
 			}
-		});
-
-		translateTransition.play();
+		
+			translateTransition.setOnFinished(new EventHandler<ActionEvent>()
+			{
+				@Override
+				public void handle(ActionEvent event)
+				{
+					ObservableList<Node> nodes = mainPane.getChildren();
+					Iterator<Node> iterator = nodes.iterator();
+					while(iterator.hasNext())
+					{
+						if(iterator.next().getId().equals("drawAnimation"))
+						{
+							iterator.remove();
+						}
+					}
+					
+					ai.drawCard(cards.get(drawCounter));
+					setAIDeck(ai);
+					drawCounter++;
+					
+					if(drawCounter < cards.size())
+					{				
+						moveCardFromDeckToAI(ai, cards);
+					}
+					else				
+					{
+						game.setShowingInfo(false);
+						hideInfo();
+						drawCounter = 0;
+						game.draw();
+					}						
+				}
+			});
+	
+			translateTransition.play();
+		}
 	}
 
 	public void clearPlayerDeck()

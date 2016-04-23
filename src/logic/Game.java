@@ -126,101 +126,102 @@ public class Game
 		run();
 	}
 	
-	private String run()
+	private void run()
 	{	
-		if(player.getDeckSize() == 0)
-		{						
-			end(player.getName());	
-			return null;
-		}	
-		
-			for(AI winningAI : ais)
-			{
-				if(winningAI.getDeckSize() == 0)
-				{
-					end(winningAI.getName());
-					return null;
-				}
-			}		
-		
-		System.out.println("ROUND: " + counter / 4 + 1);
-		
-		if(lastCard.getType().equals(CardType.REVERSE) && !lastPlayerDraw)
+		if(running)
 		{
-			if(direction.equals(Direction.RIGHT))
-			{
-				direction = Direction.LEFT;
-				controller.setImageViewDirection(Direction.LEFT);		
-
-			}
-			else
-			{
-				direction = Direction.RIGHT;
-				controller.setImageViewDirection(Direction.RIGHT);	
-			}				
-		}		
-		
-		determineNextPlayer();				
-		
-		System.out.println("Player " + currentPlayer + "'s turn");
-		
-		if(skipped || !lastCard.getType().equals(CardType.SKIP))
-		{		
-			if(currentPlayer == 1)
-			{			
-				controller.setLabelCurrentPlayer(player.getName() + " ist am Zug");
-							
-				controller.setValidPlayerDeck(player.getDeck(), player.getValidCards(lastCard, wishColor, challenge));					
-				
-				player.turn(lastCard, wishColor, challenge);										
-			}
-			else
-			{	
+			if(player.getDeckSize() == 0)
+			{						
+				end(player.getName());	
+				return;
+			}	
 			
-				AI currentAI = ais.get(currentPlayer - 2);
-				
-				controller.setLabelCurrentPlayer(currentAI.getName() + " ist am Zug");
-				
-				controller.setAIDeck(currentAI);	
-				
-				try
+				for(AI winningAI : ais)
 				{
-					switch(aiSpeed)
+					if(winningAI.getDeckSize() == 0)
 					{
-						case 1:		Thread.sleep(500);
-									break;
-						case 2:		Thread.sleep(250);
-									break;
-						case 3:		Thread.sleep(50);
-									break;
-						case 4:		Thread.sleep(0);
-									break;
-						default: 	break;
-					}					
-				}
-				catch(InterruptedException e)
+						end(winningAI.getName());
+						return;
+					}
+				}		
+			
+			System.out.println("ROUND: " + counter / 4 + 1);
+			
+			if(lastCard.getType().equals(CardType.REVERSE) && !lastPlayerDraw)
+			{
+				if(direction.equals(Direction.RIGHT))
 				{
-					//ERRORHANDLING
-					e.printStackTrace();
-				}
-				
-				currentAI.turn(lastCard, wishColor, challenge);							
-			}
-		}
-		else
-		{				
-			if(!skipped)
-			{	
-				System.out.println("SKIPPED player " + currentPlayer);
-				skipped = true;				
-				run();
-			}					
-		}
-		counter++;		
-		
-		return null;
-	}
+					direction = Direction.LEFT;
+					controller.setImageViewDirection(Direction.LEFT);		
 	
+				}
+				else
+				{
+					direction = Direction.RIGHT;
+					controller.setImageViewDirection(Direction.RIGHT);	
+				}				
+			}		
+			
+			determineNextPlayer();				
+			
+			System.out.println("Player " + currentPlayer + "'s turn");
+			
+			if(skipped || !lastCard.getType().equals(CardType.SKIP))
+			{		
+				if(currentPlayer == 1)
+				{			
+					controller.setLabelCurrentPlayer(player.getName() + " ist am Zug");
+								
+					controller.setValidPlayerDeck(player.getDeck(), player.getValidCards(lastCard, wishColor, challenge));					
+					
+					player.turn(lastCard, wishColor, challenge);										
+				}
+				else
+				{	
+				
+					AI currentAI = ais.get(currentPlayer - 2);
+					
+					controller.setLabelCurrentPlayer(currentAI.getName() + " ist am Zug");
+					
+					controller.setAIDeck(currentAI);	
+					
+					try
+					{
+						switch(aiSpeed)
+						{
+							case 1:		Thread.sleep(500);
+										break;
+							case 2:		Thread.sleep(250);
+										break;
+							case 3:		Thread.sleep(50);
+										break;
+							case 4:		Thread.sleep(0);
+										break;
+							default: 	break;
+						}					
+					}
+					catch(InterruptedException e)
+					{
+						//ERRORHANDLING
+						e.printStackTrace();
+					}
+					
+					currentAI.turn(lastCard, wishColor, challenge);							
+				}
+			}
+			else
+			{				
+				if(!skipped)
+				{	
+					System.out.println("SKIPPED player " + currentPlayer);
+					skipped = true;				
+					run();
+				}					
+			}
+			counter++;
+		}
+	}
+		
 	private void determineNextPlayer()
 	{
 		if(direction.equals(Direction.RIGHT))
@@ -244,7 +245,7 @@ public class Game
 			{
 				currentPlayer--;
 			}
-		}
+		}		
 	}
 
 	private void end(String name)
@@ -412,5 +413,10 @@ public class Game
 		System.out.println("new challengeCounter: " + challengeCounter);
 		
 		run();
+	}
+	
+	public void stop()
+	{
+		running = false;
 	}
 }

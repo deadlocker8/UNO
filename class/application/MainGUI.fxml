@@ -78,6 +78,7 @@
         <menus>
           <Menu fx:id="menu1" mnemonicParsing="false" text="Menü">
             <items>
+                  <MenuItem fx:id="menuItemNewGame" mnemonicParsing="false" onAction="#startGame" text="Neues Spiel" />
                   <MenuItem fx:id="menuItem2" mnemonicParsing="false" onAction="#openSettings" text="Einstellungen" />
                   <MenuItem fx:id="menuItem1" mnemonicParsing="false" onAction="#buttonAchievements" text="Achievements" />
               <MenuItem fx:id="menuItem3" mnemonicParsing="false" onAction="#about" text="Über" />
