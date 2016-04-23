@@ -83,6 +83,7 @@ public class Controller
 	public AchievementHandler handler;
 	private int secretCounter;
 	private boolean playerHasDrawn;
+	public boolean playerMustChallenge;
 
 	public Stage stage;
 	public Image icon = new Image("images/icon.png");
@@ -190,6 +191,8 @@ public class Controller
 		
 		drawCounter = 0;
 		playerHasDrawn = false;
+		playerMustChallenge = false;
+		
 		labelCurrentPlayer.setVisible(true);
 		labelCurrentPlayer.setText("");
 		
@@ -199,9 +202,10 @@ public class Controller
 			@Override
 			public void handle(MouseEvent event)
 			{
-				if(game.isRunning() && game.getCurrentPlayer() == 1 && !game.isShowingInfo() && !playerHasDrawn)
-				{
+				if(game.isRunning() && game.getCurrentPlayer() == 1 && !game.isShowingInfo() && !playerHasDrawn && !playerMustChallenge)
+				{	
 					playerHasDrawn = true;
+					playerMustChallenge = false;
 					Card drawedCard = game.getDeck().drawCard(game.getDeadDeck());
 					ArrayList<Card> allCards = new ArrayList<Card>();
 					allCards.add(drawedCard);				
@@ -990,7 +994,7 @@ public class Controller
 			
 			switch(ai.getID())
 			{
-				case 1:	maxWidth = stage.getScene().getWidth() - ((AI_1_STARTING_POINT.getX() + 25.0) * 2) - CARD_WIDTH;
+				case 1:	maxWidth = stage.getScene().getWidth() - ((AI_1_STARTING_POINT.getX() + 0.0) * 2) - CARD_WIDTH;
 						deckSize = ai.getDeckSize();
 
 						if(i == 0)

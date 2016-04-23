@@ -172,7 +172,14 @@ public class Game
 				{			
 					controller.setLabelCurrentPlayer(player.getName() + " ist am Zug");
 								
-					controller.setValidPlayerDeck(player.getDeck(), player.getValidCards(lastCard, wishColor, challenge));					
+					ArrayList<Card> validDeck = player.getValidCards(lastCard, wishColor, challenge);
+					controller.setValidPlayerDeck(player.getDeck(), validDeck);	
+					
+					controller.playerMustChallenge = false;
+					if(challenge && validDeck.size() > 0)
+					{
+						controller.playerMustChallenge = true;
+					}					
 					
 					player.turn(lastCard, wishColor, challenge);										
 				}

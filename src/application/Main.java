@@ -1,12 +1,15 @@
 package application;
 
+import achievements.Achievement.Status;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Main extends Application
 {
@@ -27,9 +30,34 @@ public class Main extends Application
 			
 			Controller controller = (Controller)loader.getController();
 			controller.setStage(stage);			
-			controller.init();				
+			controller.init();			
 			
-			//TODO set minWidth and Height
+			stage.setOnCloseRequest(new EventHandler<WindowEvent>()
+			{				
+				@Override
+				public void handle(WindowEvent event)
+				{
+					try
+					{
+						if(controller.handler.getAchievements().get(3).getStatus().equals(Status.LOCKED))
+						{
+							controller.handler.resetAchievement(3);
+						}
+						if(controller.handler.getAchievements().get(4).getStatus().equals(Status.LOCKED))
+						{
+							controller.handler.resetAchievement(4);
+						}	
+						controller.handler.saveAndLoad();
+					}
+					catch(Exception e)
+					{						
+					}					
+				}
+			});
+			
+			
+			
+			
 			stage.getIcons().add(new Image("images/icon.png"));
 			stage.show();		
 		}
