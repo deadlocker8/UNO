@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+import tools.PathUtils;
 import achievements.Achievement;
 import achievements.AchievementHandler;
 import achievements.Achievement.Status;
@@ -129,7 +130,7 @@ public class Controller
 		}	
 		
 		handler = new AchievementHandler(stage);
-		handler.setPath(System.getenv("APPDATA") + "/Deadlocker/UNO/achievements.save");
+		handler.setPath(PathUtils.getOSindependentPath() + "/Deadlocker/UNO/achievements.save");
 		try
 		{
 			handler.loadAchievements();
@@ -1169,7 +1170,7 @@ public class Controller
 	private void createAchievements()
 	{		
 		AchievementHandler handler = new AchievementHandler(stage);
-		handler.setPath(System.getenv("APPDATA") + "/Deadlocker/UNO/achievements.save");
+		handler.setPath(PathUtils.getOSindependentPath() + "/Deadlocker/UNO/achievements.save");
 		handler.addAchievement(new Achievement("Anfänger", "Gewinne dein erstes Spiel", null, null, Status.LOCKED));
 		handler.addAchievement(new Achievement("Fortgeschrittener", "Gewinne insgesamt 10 Spiele", null, null, Status.LOCKED, 0, 10, 0));
 		handler.addAchievement(new Achievement("Experte", "Gewinne insgesamt 50 Spiele", null, null, Status.LOCKED, 0, 50, 0));
@@ -1197,9 +1198,7 @@ public class Controller
 	@FXML
 	private void buttonAchievements()
 	{ 	
-		Stage newStage = new Stage();
-		newStage.setMinHeight(250);
-		newStage.setMinWidth(250);
+		Stage newStage = new Stage();	
 
 		AnchorPane root = new AnchorPane();
 
@@ -1215,10 +1214,8 @@ public class Controller
 		AnchorPane summary = handler.getSummary();
 
 		root.getChildren().add(summary);
-		root.getChildren().add(list);
+		root.getChildren().add(list);		
 		
-		newStage.setResizable(false);
-
 		AnchorPane.setTopAnchor(summary, 50.0);
 		AnchorPane.setLeftAnchor(summary, 25.0);
 		AnchorPane.setRightAnchor(summary, 50.0);
@@ -1230,8 +1227,10 @@ public class Controller
 
 		root.setStyle("-fx-background-color: #3F3F3F;");
 
-		Scene scene = new Scene(root, 800, 600);
+		Scene scene = new Scene(root, 600, 600);
 		newStage.setScene(scene);
+		newStage.setMinHeight(500);
+		newStage.setMinWidth(600);		
 
 		newStage.setTitle("Achievements");
 		newStage.initModality(Modality.APPLICATION_MODAL);

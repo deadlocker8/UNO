@@ -33,8 +33,8 @@ public class Settings implements Serializable
 	
 	public Settings()
 	{
-		PathUtils.checkFolder(new File(System.getenv("APPDATA") + "/Deadlocker/UNO/"));
-		File file = new File(System.getenv("APPDATA") + "/Deadlocker/UNO/settings.config");	
+		PathUtils.checkFolder(new File(PathUtils.getOSindependentPath() + "/Deadlocker/UNO/"));
+		File file = new File(PathUtils.getOSindependentPath() + "/Deadlocker/UNO/settings.config");	
 		if(!file.exists())
 		{
 			createStandardValues();
@@ -61,7 +61,7 @@ public class Settings implements Serializable
 	
 	public void save() throws Exception
 	{
-		FileOutputStream fileOut = new FileOutputStream(System.getenv("APPDATA") + "/Deadlocker/UNO/settings.config");
+		FileOutputStream fileOut = new FileOutputStream(PathUtils.getOSindependentPath() + "/Deadlocker/UNO/settings.config");
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		out.writeObject(this);
 		out.close();
@@ -70,7 +70,7 @@ public class Settings implements Serializable
 	
 	public void load() throws Exception
 	{
-		 FileInputStream fileIn = new FileInputStream(System.getenv("APPDATA") + "/Deadlocker/UNO/settings.config");
+		 FileInputStream fileIn = new FileInputStream(PathUtils.getOSindependentPath() + "/Deadlocker/UNO/settings.config");
          ObjectInputStream in = new ObjectInputStream(fileIn);
          Settings loaded = (Settings) in.readObject();
          in.close();

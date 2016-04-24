@@ -1,15 +1,14 @@
 package application;
 
-import achievements.Achievement.Status;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import achievements.Achievement.Status;
 
 public class Main extends Application
 {
@@ -21,7 +20,7 @@ public class Main extends Application
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("MainGUI.fxml"));
 			Parent root = (Parent)loader.load();
 
-			Scene scene = new Scene(root, 800, 650, false, SceneAntialiasing.BALANCED);
+			Scene scene = new Scene(root, 800, 650);
 
 			stage.setResizable(true);
 			stage.setTitle("UNO");
