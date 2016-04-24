@@ -4,13 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Random;
 import java.util.ResourceBundle;
 
-import tools.PathUtils;
-import achievements.Achievement;
-import achievements.AchievementHandler;
-import achievements.Achievement.Status;
 import javafx.animation.TranslateTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -46,6 +41,10 @@ import logic.Color;
 import logic.Direction;
 import logic.Game;
 import logic.Player;
+import tools.PathUtils;
+import achievements.Achievement;
+import achievements.Achievement.Status;
+import achievements.AchievementHandler;
 
 public class Controller
 {
@@ -584,7 +583,7 @@ public class Controller
 		}
 	}
 
-	public void moveAICardToDeadDeck(AI ai, int currentPlayer, Card card, Color newWishColor)
+	public void moveAICardToDeadDeck(AI ai, int currentPlayer, Card card, int cardPosition, Color newWishColor)
 	{
 		ObservableList<Node> nodes = mainPane.getChildren();
 		ArrayList<Integer> possibleNodes = new ArrayList<Integer>();
@@ -596,11 +595,8 @@ public class Controller
 				possibleNodes.add(i);
 			}
 		}
-
-		Random random = new Random();
-		int viewNumber = random.nextInt(possibleNodes.size());
-
-		ImageView view = (ImageView)mainPane.getChildren().get(possibleNodes.get(viewNumber));
+		
+		ImageView view = (ImageView)mainPane.getChildren().get(possibleNodes.get(cardPosition));
 		view.setImage(new Image("images/" + card.getType() + "-" + card.getColor() + ".png"));
 
 		Point2D deckPosition = iconLastCard.localToScene(Point2D.ZERO);

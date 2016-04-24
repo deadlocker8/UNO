@@ -196,7 +196,7 @@ public class AI
 
 			if(game.isRunning())
 			{
-				game.getController().moveAICardToDeadDeck(this, game.getCurrentPlayer(), playedCard, newWishColor);
+				game.getController().moveAICardToDeadDeck(this, game.getCurrentPlayer(), playedCard, getCardPositionInDeck(playedCard), newWishColor);
 			}
 		}
 	}
@@ -213,6 +213,18 @@ public class AI
 		}
 
 		return highestValuedCard;
+	}
+	
+	private int getCardPositionInDeck(Card card)
+	{
+		for(int i = 0; i < deck.size(); i++)
+		{
+			if(deck.get(i).equals(card))
+			{
+				return i;
+			}
+		}
+		return 0;
 	}
 
 	private Color getBestColor()
