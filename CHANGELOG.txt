@@ -5,8 +5,18 @@ UNO
 ======
 
 >>> start-date: 09.04.16
->>> status-date: 23.04.16
+>>> status-date: 24.04.16
 ____________________________________________________
+
+v.1.1.0 - (2)
+===============
+
+-added minHeight and minWidth to Achievement Window
+-Fixed flipped image buf (only appears on Mac) (caused by Anti-Aliasing)
+-changed Menu and Startpage Layout
+-made save path OS independent
+
+>>> end-work: 24.04.16
 
 v.1.0.0 - (1)
 ===============

@@ -185,35 +185,37 @@ public class Game
 				}
 				else
 				{	
-				
-					AI currentAI = ais.get(currentPlayer - 2);
-					
-					controller.setLabelCurrentPlayer(currentAI.getName() + " ist am Zug");
-					
-					controller.setAIDeck(currentAI);	
-					
-					try
+					if(running)
 					{
-						switch(aiSpeed)
+						AI currentAI = ais.get(currentPlayer - 2);
+						
+						controller.setLabelCurrentPlayer(currentAI.getName() + " ist am Zug");
+						
+						controller.setAIDeck(currentAI);	
+						
+						try
 						{
-							case 1:		Thread.sleep(500);
-										break;
-							case 2:		Thread.sleep(250);
-										break;
-							case 3:		Thread.sleep(50);
-										break;
-							case 4:		Thread.sleep(0);
-										break;
-							default: 	break;
-						}					
+							switch(aiSpeed)
+							{
+								case 1:		Thread.sleep(500);
+											break;
+								case 2:		Thread.sleep(250);
+											break;
+								case 3:		Thread.sleep(50);
+											break;
+								case 4:		Thread.sleep(0);
+											break;
+								default: 	break;
+							}					
+						}
+						catch(InterruptedException e)
+						{
+							//ERRORHANDLING
+							e.printStackTrace();
+						}
+						
+						currentAI.turn(lastCard, wishColor, challenge);	
 					}
-					catch(InterruptedException e)
-					{
-						//ERRORHANDLING
-						e.printStackTrace();
-					}
-					
-					currentAI.turn(lastCard, wishColor, challenge);							
 				}
 			}
 			else
@@ -425,5 +427,6 @@ public class Game
 	public void stop()
 	{
 		running = false;
+		System.out.println("STOPPED");
 	}
 }

@@ -78,8 +78,7 @@
         <menus>
           <Menu fx:id="menu1" mnemonicParsing="false" text="Menü">
             <items>
-                  <MenuItem fx:id="menuItemNewGame" mnemonicParsing="false" onAction="#startGame" text="Neues Spiel" />
-                  <MenuItem fx:id="menuItem2" mnemonicParsing="false" onAction="#openSettings" text="Einstellungen" />
+                  <MenuItem fx:id="menuItemBack" mnemonicParsing="false" onAction="#showMainMenu" text="Zurück zum Start" />
                   <MenuItem fx:id="menuItem1" mnemonicParsing="false" onAction="#buttonAchievements" text="Achievements" />
               <MenuItem fx:id="menuItem3" mnemonicParsing="false" onAction="#about" text="Über" />
             </items>
@@ -91,12 +90,17 @@
             <Image url="@../images/icon.png" />
          </image>
       </ImageView>
-      <Label fx:id="labelLogo" layoutX="244.0" layoutY="385.0" text="Willkommen bei UNO!">
+      <Label fx:id="labelLogo" layoutX="252.0" layoutY="385.0" text="Willkommen bei UNO!">
          <font>
             <Font name="System Bold" size="28.0" />
          </font>
       </Label>
-      <Button fx:id="buttonNewGame" layoutX="344.0" layoutY="469.0" mnemonicParsing="false" onAction="#startGame" text="Neues Spiel">
+      <Button fx:id="buttonNewGame" layoutX="282.0" layoutY="468.0" mnemonicParsing="false" onAction="#startGame" text="Neues Spiel">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="buttonSettings" layoutX="410.0" layoutY="468.0" mnemonicParsing="false" onAction="#openSettings" text="Einstellungen">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>

@@ -69,13 +69,12 @@ public class Controller
 	@FXML private MenuBar menuBar;
 	@FXML private Menu menu1;	
 	@FXML private MenuItem menuItem1;
-	@FXML private MenuItem menuItem2;
 	@FXML private MenuItem menuItem3;
-	@FXML private MenuItem menuItemNewGame;
+	@FXML private MenuItem menuItemBack;
 	@FXML private ImageView imageViewLogo;
 	@FXML private Label labelLogo;
 	@FXML private Button buttonNewGame;
-	
+	@FXML private Button buttonSettings;	
 
 	public Game game;
 	public Color chosenWishColor;
@@ -85,6 +84,7 @@ public class Controller
 	private int secretCounter;
 	private boolean playerHasDrawn;
 	public boolean playerMustChallenge;
+	public TranslateTransition translateTransition;
 
 	public Stage stage;
 	public Image icon = new Image("images/icon.png");
@@ -184,11 +184,10 @@ public class Controller
 	{
 		if(game != null)
 		{
-			game.stop();	
+			game.stop();
 		}
 		
 		clearAll();
-		menuItem2.setDisable(true);
 		
 		drawCounter = 0;
 		playerHasDrawn = false;
@@ -231,11 +230,26 @@ public class Controller
 		buttonStart.setVisible(true);		
 	}
 	
+	public void showMainMenu()
+	{
+		if(game != null)
+		{
+			game.stop();	
+		}
+		
+		clearAll();
+		clearPlayerDeck();
+		clearAllDecks(game.getAIs());
+		
+		showNeutralUI();
+	}
+	
 	public void showNeutralUI()
 	{
 		imageViewLogo.setVisible(true);
 		labelLogo.setVisible(true);
 		buttonNewGame.setVisible(true);
+		buttonSettings.setVisible(true);
 	}
 	
 	public void hideNeutralUI()
@@ -243,6 +257,7 @@ public class Controller
 		imageViewLogo.setVisible(false);
 		labelLogo.setVisible(false);
 		buttonNewGame.setVisible(false);
+		buttonSettings.setVisible(false);
 	}
 	
 	public void setLabelNames(Player player, ArrayList<AI> ais)
@@ -507,7 +522,7 @@ public class Controller
 	{
 		Point2D deckPosition = iconLastCard.localToScene(Point2D.ZERO);
 
-		TranslateTransition translateTransition = new TranslateTransition();
+		translateTransition = new TranslateTransition();
 		translateTransition.setDuration(Duration.millis(500));
 		translateTransition.setNode(view);
 		translateTransition.setCycleCount(1);
@@ -521,46 +536,52 @@ public class Controller
 			@Override
 			public void handle(ActionEvent event)
 			{
-				if(newWishColor != null)
+				if(game.isRunning())
 				{
-					showCircleWishColor(newWishColor);
+					if(newWishColor != null)
+					{
+						showCircleWishColor(newWishColor);
+					}
+					else
+					{
+						hideWishColor();
+					}
+					Card playedCard	= game.getPlayer().playCard(card);
+					
+					if(playedCard.getType().equals(CardType.DRAW_FOUR) && game.getDeadDeck().getCards().get(game.getDeadDeck().getCards().size()-1).getType().equals(CardType.DRAW_FOUR) && game.getChallengeCounter() > 0)
+					{
+						try
+						{							
+							handler.unlockAchievement(6);						
+							handler.saveAndLoad();
+						}
+						catch(Exception e)
+						{							
+						}
+					}
+					
+					if(playedCard.getType().equals(CardType.WILD))
+					{
+						try
+						{							
+							handler.unlockAchievement(7);						
+							handler.saveAndLoad();
+						}
+						catch(Exception e)
+						{							
+						}
+					}		
+					
+					setPlayerDeck(game.getPlayer().getDeck());
+					game.playCard(playedCard, newWishColor);
 				}
-				else
-				{
-					hideWishColor();
-				}
-				Card playedCard	= game.getPlayer().playCard(card);
-				
-				if(playedCard.getType().equals(CardType.DRAW_FOUR) && game.getDeadDeck().getCards().get(game.getDeadDeck().getCards().size()-1).getType().equals(CardType.DRAW_FOUR) && game.getChallengeCounter() > 0)
-				{
-					try
-					{							
-						handler.unlockAchievement(6);						
-						handler.saveAndLoad();
-					}
-					catch(Exception e)
-					{							
-					}
-				}
-				
-				if(playedCard.getType().equals(CardType.WILD))
-				{
-					try
-					{							
-						handler.unlockAchievement(7);						
-						handler.saveAndLoad();
-					}
-					catch(Exception e)
-					{							
-					}
-				}		
-				
-				setPlayerDeck(game.getPlayer().getDeck());
-				game.playCard(playedCard, newWishColor);
 			}
 		});
 
-		translateTransition.play();
+		if(game.isRunning())
+		{
+			translateTransition.play();
+		}
 	}
 
 	public void moveAICardToDeadDeck(AI ai, int currentPlayer, Card card, Color newWishColor)
@@ -584,7 +605,7 @@ public class Controller
 
 		Point2D deckPosition = iconLastCard.localToScene(Point2D.ZERO);
 
-		TranslateTransition translateTransition = new TranslateTransition();
+		translateTransition = new TranslateTransition();
 		translateTransition.setDuration(Duration.millis(500));
 		translateTransition.setNode(view);
 		translateTransition.setCycleCount(1);
@@ -598,21 +619,27 @@ public class Controller
 			@Override
 			public void handle(ActionEvent event)
 			{
-				if(newWishColor != null)
+				if(game.isRunning())
 				{
-					showCircleWishColor(newWishColor);
+					if(newWishColor != null)
+					{
+						showCircleWishColor(newWishColor);
+					}
+					else
+					{
+						hideWishColor();
+					}
+					Card playedCard = ai.playCard(card);
+					setAIDeck(ai);
+					game.playCard(playedCard, newWishColor);
 				}
-				else
-				{
-					hideWishColor();
-				}
-				Card playedCard = ai.playCard(card);
-				setAIDeck(ai);
-				game.playCard(playedCard, newWishColor);
 			}
 		});
 
-		translateTransition.play();
+		if(game.isRunning())
+		{
+			translateTransition.play();
+		}
 	}
 	
 	public void moveCardFromDeckToPlayer(ArrayList<Card> cards)
@@ -627,7 +654,7 @@ public class Controller
 			view.setY(deckPosition.getY());
 			mainPane.getChildren().add(view);	
 			
-			TranslateTransition translateTransition = new TranslateTransition();
+			translateTransition = new TranslateTransition();
 			translateTransition.setDuration(Duration.millis(500));
 			translateTransition.setNode(view);
 			translateTransition.setCycleCount(1);
@@ -640,7 +667,7 @@ public class Controller
 			{
 				@Override
 				public void handle(ActionEvent event)
-				{
+				{					
 					ObservableList<Node> nodes = mainPane.getChildren();
 					Iterator<Node> iterator = nodes.iterator();
 					while(iterator.hasNext())
@@ -650,27 +677,32 @@ public class Controller
 							iterator.remove();
 						}
 					}
-					
-					game.getPlayer().drawCard(cards.get(drawCounter));
-					setPlayerDeck(game.getPlayer().getDeck());
-					drawCounter++;
-					playerHasDrawn = false;
-					
-					if(drawCounter < cards.size())
-					{				
-						moveCardFromDeckToPlayer(cards);
+					if(game.isRunning())
+					{					
+						game.getPlayer().drawCard(cards.get(drawCounter));
+						setPlayerDeck(game.getPlayer().getDeck());
+						drawCounter++;
+						playerHasDrawn = false;
+						
+						if(drawCounter < cards.size())
+						{				
+							moveCardFromDeckToPlayer(cards);
+						}
+						else				
+						{
+							game.setShowingInfo(false);
+							hideInfo();
+							drawCounter = 0;
+							game.draw();
+						}		
 					}
-					else				
-					{
-						game.setShowingInfo(false);
-						hideInfo();
-						drawCounter = 0;
-						game.draw();
-					}						
 				}
 			});
 	
-			translateTransition.play();
+			if(game.isRunning())
+			{
+				translateTransition.play();
+			}
 		}
 	}
 	
@@ -777,7 +809,7 @@ public class Controller
 			view.setY(deckPosition.getY());
 			mainPane.getChildren().add(view);	
 			
-			TranslateTransition translateTransition = new TranslateTransition();
+			translateTransition = new TranslateTransition();
 			translateTransition.setDuration(Duration.millis(500));
 			translateTransition.setNode(view);
 			translateTransition.setCycleCount(1);
@@ -814,25 +846,31 @@ public class Controller
 						}
 					}
 					
-					ai.drawCard(cards.get(drawCounter));
-					setAIDeck(ai);
-					drawCounter++;
-					
-					if(drawCounter < cards.size())
-					{				
-						moveCardFromDeckToAI(ai, cards);
-					}
-					else				
+					if(game.isRunning())
 					{
-						game.setShowingInfo(false);
-						hideInfo();
-						drawCounter = 0;
-						game.draw();
-					}						
+						ai.drawCard(cards.get(drawCounter));
+						setAIDeck(ai);
+						drawCounter++;
+						
+						if(drawCounter < cards.size())
+						{				
+							moveCardFromDeckToAI(ai, cards);
+						}
+						else				
+						{
+							game.setShowingInfo(false);
+							hideInfo();
+							drawCounter = 0;
+							game.draw();
+						}	
+					}
 				}
 			});
 	
-			translateTransition.play();
+			if(game.isRunning())
+			{
+				translateTransition.play();
+			}
 		}
 	}
 
@@ -1152,8 +1190,7 @@ public class Controller
 	
 	public void clearAll()
 	{
-		hideNeutralUI();
-		menuItem2.setDisable(false);
+		hideNeutralUI();	
 		hideWishColor();
 		hideInfo();
 		labelCurrentPlayer.setVisible(false);

@@ -163,7 +163,10 @@ public class AI
 			{
 				System.out.println("draw " + game.getChallengeCounter() + " cards");
 				ArrayList<Card> drawedCards = game.getDeck().drawCards(game.getChallengeCounter(), game.getDeadDeck());
-				game.getController().moveCardFromDeckToAI(this, drawedCards);
+				if(game.isRunning())
+				{
+					game.getController().moveCardFromDeckToAI(this, drawedCards);
+				}
 				System.out.println("deack after draw: " + deck);
 			}
 			else
@@ -171,7 +174,10 @@ public class AI
 				System.out.println("draw one card");
 				ArrayList<Card> drawedCards = new ArrayList<Card>();
 				drawedCards.add(game.getDeck().drawCard(game.getDeadDeck()));
-				game.getController().moveCardFromDeckToAI(this, drawedCards);
+				if(game.isRunning())
+				{
+					game.getController().moveCardFromDeckToAI(this, drawedCards);
+				}
 				System.out.println("deack after draw: " + deck);
 			}
 		}
@@ -188,7 +194,10 @@ public class AI
 				newWishColor = getBestColor();				
 			}
 
-			game.getController().moveAICardToDeadDeck(this, game.getCurrentPlayer(), playedCard, newWishColor);
+			if(game.isRunning())
+			{
+				game.getController().moveAICardToDeadDeck(this, game.getCurrentPlayer(), playedCard, newWishColor);
+			}
 		}
 	}
 
