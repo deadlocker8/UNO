@@ -1204,19 +1204,19 @@ public class Controller
 	{		
 		AchievementHandler handler = new AchievementHandler(stage);
 		handler.setPath(PathUtils.getOSindependentPath() + "/Deadlocker/UNO/achievements.save");
-		handler.addAchievement(new Achievement("Anfänger", "Gewinne dein erstes Spiel", null, null, Status.LOCKED));
+		handler.addAchievement(new Achievement("Anfï¿½nger", "Gewinne dein erstes Spiel", null, null, Status.LOCKED));
 		handler.addAchievement(new Achievement("Fortgeschrittener", "Gewinne insgesamt 10 Spiele", null, null, Status.LOCKED, 0, 10, 0));
 		handler.addAchievement(new Achievement("Experte", "Gewinne insgesamt 50 Spiele", null, null, Status.LOCKED, 0, 50, 0));
 		
-		handler.addAchievement(new Achievement("Glückssträhne", "Gewinne hintereinander 3 Spiele", null, null, Status.LOCKED, 0, 3, 0));
-		handler.addAchievement(new Achievement("Läuft bei dir!", "Gewinne hintereinander 5 Spiele", null, null, Status.LOCKED, 0, 5, 0));
+		handler.addAchievement(new Achievement("Glï¿½cksstrï¿½hne", "Gewinne hintereinander 3 Spiele", null, null, Status.LOCKED, 0, 3, 0));
+		handler.addAchievement(new Achievement("Lï¿½uft bei dir!", "Gewinne hintereinander 5 Spiele", null, null, Status.LOCKED, 0, 5, 0));
 		
 		handler.addAchievement(new Achievement("Arme Sau", "Du musst mehr als 10 Karten ziehen", null, null, Status.LOCKED));
 		handler.addAchievement(new Achievement("Gegenangriff", "Kontere eine +4", null, null, Status.LOCKED));
-		handler.addAchievement(new Achievement("Wunschkonzert", "Wünsch dir eine Farbe", null, null, Status.LOCKED));
+		handler.addAchievement(new Achievement("Wunschkonzert", "Wï¿½nsch dir eine Farbe", null, null, Status.LOCKED));
 		handler.addAchievement(new Achievement("Cheatest du?", "Besitze zwei +4 Karten gleichzeitig", null, null, Status.LOCKED));		
 		
-		handler.addAchievement(new Achievement("Unmöglich", "Klicke 5 mal auf den Ablagestapel", null, null, Status.HIDDEN));		
+		handler.addAchievement(new Achievement("Unmï¿½glich", "Klicke 5 mal auf den Ablagestapel", null, null, Status.HIDDEN));		
 
 		try
 		{
@@ -1275,9 +1275,9 @@ public class Controller
 	public void about()
 	{
 		Alert alert = new Alert(AlertType.INFORMATION);
-		alert.setTitle("Über " + bundle.getString("app.name"));
+		alert.setTitle("Ãœber " + bundle.getString("app.name"));
 		alert.setHeaderText(bundle.getString("app.name"));
-		alert.setContentText("Version:     " + bundle.getString("version.name") + "\r\nDatum:      " + bundle.getString("version.date") + "\r\nAutor:        Robert Goldmann\r\n");
+		alert.setContentText("Version:     " + bundle.getString("version.name") + "\r\nDatum:      " + bundle.getString("version.date") + "\r\nAutor:        Robert Goldmann\r\nCard images from:\nhttps://upload.wikimedia.org/wikipedia/commons/thumb/9/95/UNO_cards_deck.svg/800px-UNO_cards_deck.svg.png");
 		Stage dialogStage = (Stage)alert.getDialogPane().getScene().getWindow();
 		dialogStage.getIcons().add(icon);
 		alert.showAndWait();
