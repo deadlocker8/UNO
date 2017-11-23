@@ -8,3 +8,9 @@
 implementation of the card game UNO in Java
 
 ### Screenshots
+
+![game](/build/screenshots/game.png)
+![game](/build/screenshots/game-2.png)
+![game](/build/screenshots/game-3.png)
+![settings](/build/screenshots/settings.png)
+![achievements](/build/screenshots/achievements.png)
